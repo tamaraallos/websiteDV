@@ -8,9 +8,6 @@ const WIDTH_DEFAULT = "0.5px";
 const WIDTH_HIGHLIGHT = "0.8px";
 
 // Default chart options
-// TODO: remove these => populate category and year dynamically after reading csv is more modular and more interesting to write
-let cause = "Neoplasms";
-let year = 2015;
 let sex = "Total";
 
 // Set up map projection
@@ -31,25 +28,13 @@ let svg = d3.select("#choropleth")
             .attr("height", HEIGHT);
 
 // Empty array for entire data
-let allCauses = [];
-
-// Read in data from specified file
-d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
-    // Convert str to num
-    data.forEach(d => d.Value = +d.Value);
-
-    // Store all data
-    allCauses = data;
-
-    // Render initial view with default options
-    renderChoropleth(cause, year, sex);
-}).catch(error => console.error("Error fetching CSV data: ", error));
+let allData = [];
 
 // Merge CSV data and GeoJSON map /
 // Render map and apply fill per value
 function renderChoropleth(cause, year, sex) {
     // Have to filter data first to get correct domain for cause
-    let filteredData = allCauses.filter(d => d.Cause === cause && parseInt(d.Year) === year && d.Sex === sex);
+    let filteredData = allData.filter(d => d.Cause === cause && parseInt(d.Year) === year && d.Sex === sex);
 
     // Set colour domain from new category values
     colour.domain(d3.extent(filteredData, d => d.Value));
@@ -72,21 +57,9 @@ function renderChoropleth(cause, year, sex) {
             .data(json.features)
             .join("path")
             .attr("class", "country")
-            .attr("d", path)
-    
+            .attr("d", path)   
             // If d.properties.value exists return colour else empty
             .attr("fill", d => d.properties.value ? colour(d.properties.value) : COLOUR_EMPTY)
-            // .attr("fill", function(d) { // rewrite using ternary ? :
-            //     // Get data value
-            //     let value = d.properties.value;
-
-            //     if (value) {
-            //         return colour(value);
-            //     } else {
-            //         return COLOUR_EMPTY;
-            //     }
-            // })
-
             .attr("stroke", COLOUR_DEFAULT)
             .attr("stroke-width", WIDTH_DEFAULT)
 
@@ -103,17 +76,79 @@ function renderChoropleth(cause, year, sex) {
     }).catch(error => console.error("Error while loading GeoJSON data:", error));
 };
 
-// Event listener for category select
-d3.select("#causes").on("change", function() {
-    cause = this.value;
-    renderChoropleth(cause, year, sex);
-});
+// Takes a set of causes and creates a select /
+// menu with an option for each cause.
+function createCauses(uniqueCauses) {
+    // add select element
+    let select = d3.select("#causes")
+                    .append("select")
+                    .attr("id", "cause-select");
 
-// Event listener for year select
-d3.select("#years").on("change", function() {
-    year = +this.value;
+    // Bind set of causes to options /
+    // and append to select element
+    select.selectAll("option")
+            .data(uniqueCauses)
+            .enter()
+            .append("option")
+            .attr("value", d => d)
+            .text(d => d);
+
+    cause = uniqueCauses[0]; // default to first value
+    
+    // Event listener for category select
+    select.on("change", function() {
+        cause = this.value;
+        renderChoropleth(cause, year, sex);
+    });
+};
+
+// Takes array of [min, max] Year /
+// and creates labelled slider.
+function createYears(rangeYears) {
+    let yearDiv = d3.select("#years");
+
+    let yearLabel = yearDiv.append("label")
+                    .attr("id", "year-label")
+                    .text(`Year: ${rangeYears[0]}`); // default to min year
+                    
+    let slider = yearDiv.append("input")
+                        .attr("type", "range")
+                        .attr("min", rangeYears[0])
+                        .attr("max", rangeYears[1])
+                        .attr("value", rangeYears[0]) // default to min year
+                        .attr("step", 1);
+
+    year = rangeYears[0]; // default to min year
+
+    // Update label and choro on change
+    slider.on("input", function() {
+        year = +this.value; // convert to num
+        yearLabel.text(`Year: ${year}`);
+        renderChoropleth(cause, year, sex);
+    });
+};
+
+// Read in data from specified file
+d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
+    // Convert str to num
+    data.forEach(d => d.Value = +d.Value);
+
+    // Store all data
+    allData = data;
+
+    // create set of causes and pass set to dropdown creation function
+    let uniqueCauses = Array.from(new Set(allData.map(d => d.Cause)));
+    createCauses(uniqueCauses);
+
+    // get min and max of all years and create slider
+    let rangeYears = d3.extent(allData, d => +d.Year); // convert str to num
+    createYears(rangeYears);
+
+    let sex = "Total";
+
+    // Render initial view with default options
     renderChoropleth(cause, year, sex);
-});
+}).catch(error => console.error("Error fetching CSV data: ", error));
 
 // Event listener for sex select
 d3.select("#sex").on("change", function() {
@@ -124,9 +159,7 @@ d3.select("#sex").on("change", function() {
 
 // ~-*-~-*-~
 // TO DO:
-// Clean the event listeners up
 // Move mouseover events to separate functions
 // Add mouseover pop-ups
-// Selection elements should display default values
 // Reduce opacity of irrelevant countries
 // Add hover effects for countries
