@@ -1,0 +1,56 @@
+/* legend */
+.chart-container {
+    display: flex; 
+    align-items: flex-start;
+}
+
+#chart {
+    padding-left: 100px;
+    flex: 0;
+}
+
+#legendContainer {
+    background-color: rgb(235, 231, 231);
+    padding: 10px;
+}
+
+.legend {
+    margin-left: 10px;
+    margin-top: 100px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.legend-color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border: 1px solid #000;
+}
+
+.legend-label {
+    font-size: 14px;
+    color: #333;
+}
+
+/* drop down countries */
+
+.filterContainer, h3 {
+    text-align: center;
+    background-color: rgb(235, 231, 231);
+}
+
+.countryOptions {
+    margin: 10px;
+    text-align: center;
+}
+
+#countryDropdown {
+    padding: 5px;
+    font-size: 16px;
+}
+

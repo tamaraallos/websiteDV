@@ -1,7 +1,7 @@
 // height, width, padding setup
 var w = 1000;
 var h = 800;
-var padding = 50;
+var padding = 100;
 
 // color scale
 var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -13,10 +13,10 @@ var xScale = d3.scaleBand()
     .paddingOuter(0.2) // space for the axis
 
 var yScale = d3.scaleLinear()
-    .range([h - padding, padding]);
+    .range([h - padding, padding])
 
 // svg creation
-svg = d3.select("body")
+svg = d3.select("#chart")
     .append("svg")
     .attr("width", w)
     .attr("height", h)
@@ -28,6 +28,14 @@ var xAxisGroup = svg.append("g")
 var yAxisGroup = svg.append("g")
     .attr("transform", `translate(${padding},0)`);
 
+// tool tip - styles (pop-up box)
+var tooltip = d3.select("body").append("div")
+    .style("position", "absolute")
+    .style("background-color", "#fcfcf9")
+    .style("border", "solid 1px black")
+    .style("padding", "10px")
+    .style("border-radius", "3px")
+    .style("visibility", "hidden");  // hide tool tip    
 
 // load the data
 d3.csv("all-top-level-causes.csv").then(function(data) {
@@ -35,7 +43,8 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
     var causes = Array.from(new Set(data.map(d => d.Cause)));
     var countries = Array.from(new Set(data.map(d => d.Country)));
     
-    var dropdown = d3.select("body").append("select")
+    var dropdown = d3.select("#countryContainer").append("select")
+        .attr("id", "countryDropdown")
         .on("change", function() {
             var selectedCountry = this.value;
             updateTitle(selectedCountry)
@@ -55,6 +64,7 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
 
     // create the graph
     createGraph(data, causes, defaultCountry);
+    axisLabels()
 });
 
 // function to update the title of page by country chosen
@@ -63,15 +73,6 @@ function updateTitle(country) {
         .text(`${country}'s Mortality Causes Over Time`)
         .style("text-align", "center")
 }
-
-// tool tip - styles (pop-up box)
-var tooltip = d3.select("body").append("div")
-    .style("position", "absolute")
-    .style("background-color", "#fcfcf9")
-    .style("border", "solid 1px black")
-    .style("padding", "10px")
-    .style("border-radius", "3px")
-    .style("visibility", "hidden");  // hide tool tip
 
 // create the graph
 function createGraph(data, causes, country) {
@@ -97,14 +98,13 @@ function createGraph(data, causes, country) {
     // create stack
     var stack = d3.stack()
         .keys(causes);
-
     var series = stack(decadeData); // stack data
 
     // update scales
     xScale.domain(decadeData.map(d => d.Decade));
     yScale.domain([0, d3.max(decadeData, d => d3.sum(causes, cause => d[cause]))]);
 
-    // select existing bars
+    // select existing bars and update stack
     var groups = svg.selectAll("g.stack-group")
         .data(series);
     
@@ -115,8 +115,8 @@ function createGraph(data, causes, country) {
         .classed("stack-group", true)
         .style("fill", (d, i) => color(i))
 
-    var bars = newGroups.merge(groups)
-        .selectAll("rect")
+    // create bars within each stack group
+    var bars = newGroups.merge(groups).selectAll("rect")
         .data(d => d)
 
     bars.exit().remove(); // remove old bars
@@ -136,20 +136,73 @@ function createGraph(data, causes, country) {
                 .style("visibility", "visible")
                 .style("left", (event.pageX + 15) + "px") // right of cursor (x-axis)
                 .style("top", (event.pageY - 50) + "px"); // above cursor (y-axis)
+
+                var currentColor = d3.select(this).style("fill");
+
+                d3.select(this)
+                .transition()
+                .duration(150)
+                .attr("stroke", currentColor)
+                .attr("stroke-width", 2)
+
         })
         .on("mouseout", function() {
+            d3.select(this)
+                .transition()
+                .duration(150)
+                .attr("stroke", "none")
+                .attr("stroke-width", 0)
+
             tooltip.style("visibility", 'hidden');
         });
 
-    // update axes
+    // update axes and create legend
+    updateScales();
+    createLegend(causes)
+}
+
+// updates the y and x axis scales
+function updateScales() {
     xAxisGroup.call(d3.axisBottom(xScale))
         .selectAll("text") 
-        // .attr("transform", "rotate(-50)") // turn the labels on the x-axis
-        // .style("text-anchor", "end"); // uncomment if u uncomment above
 
     yAxisGroup.call(d3.axisLeft(yScale));
+}
 
+// labels for x and y axis
+function axisLabels() {
+    svg.append("text")
+        .attr("class", "x-axis-label")
+        .attr("text-anchor", "middle")
+        .attr("x", w / 2) 
+        .attr("y", h - padding + 70)
+        .text("Years (in decades)");
+
+    svg.append("text")
+        .attr("class", "y-axis-label")
+        .attr("text-anchor", "middle")
+        .attr("x", - (h / 2)) 
+        .attr("y", padding - 70) 
+        .attr("transform", "rotate(-90)") // rotate to side
+        .text("Death Billion");
 }
 
 
+function createLegend(causes) {
+    var legendContainer = d3.select("#legendContainer");
+    legendContainer.selectAll(".legend-item").remove(); // clear existing legend items so they dont pile up
+
+    causes.forEach((cause, i) => {
+        var legendItem = legendContainer.append("div")
+            .attr("class", "legend-item");
+
+        legendItem.append("div")
+            .attr("class", "legend-color-box")
+            .style("background-color", color(i));  // use the color scale
+
+        legendItem.append("span")
+            .attr("class", "legend-label")
+            .text(cause);  // display the cause
+    });
+}
 
