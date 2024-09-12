@@ -8,6 +8,8 @@ const WIDTH_DEFAULT = "0.5px";
 const WIDTH_HIGHLIGHT = "0.8px";
 
 // Default chart options
+let cause, year;
+let country = "Australia";
 let sex = "Total";
 
 // Set up map projection
@@ -34,7 +36,7 @@ let allData = [];
 // Render map and apply fill per value
 function renderChoropleth(cause, year, sex) {
     // Have to filter data first to get correct domain for cause
-    let filteredData = allData.filter(d => d.Cause === cause && parseInt(d.Year) === year && d.Sex === sex);
+    let filteredData = allData.filter(d => d.Cause === cause && d.Year === year && d.Sex === sex);
 
     // Set colour domain from new category values
     colour.domain(d3.extent(filteredData, d => d.Value));
@@ -68,13 +70,15 @@ function renderChoropleth(cause, year, sex) {
             .on("mouseover", function(event, d) {
                 d3.select(this).style("stroke", COLOUR_HIGHLIGHT)
                     .style("stroke-width", WIDTH_HIGHLIGHT);
+                // add country variaable that changes on hover and call the line chart
             })
             .on("mouseout", function(event, d) {
                 d3.select(this).style("stroke", COLOUR_DEFAULT)
                     .style("stroke-width", WIDTH_DEFAULT);
+                // set country to null and remove line chart
             });
     }).catch(error => console.error("Error while loading GeoJSON data:", error));
-};
+}
 
 // Takes a set of causes and creates a select /
 // menu with an option for each cause.
@@ -99,8 +103,9 @@ function createCauses(uniqueCauses) {
     select.on("change", function() {
         cause = this.value;
         renderChoropleth(cause, year, sex);
+        lineChart(cause, country, sex);
     });
-};
+}
 
 // Takes array of [min, max] Year /
 // and creates labelled slider.
@@ -122,16 +127,94 @@ function createYears(rangeYears) {
 
     // Update label and choro on change
     slider.on("input", function() {
-        year = +this.value; // convert to num
+        year = +this.value; // convert to num  -> is this necessary with a slider? does the slider return nums or strings?
         yearLabel.text(`Year: ${year}`);
         renderChoropleth(cause, year, sex);
     });
+}
+
+/*
+  Adding line chart stuff below here.
+  refactor afterwards. make it work first then make it better.
+*/
+// these will need better names
+// also move to top with rest of constants
+const LINE_MARGIN = {top: 20, right: 30, bottom: 40, left:50};
+const LINE_WIDTH = 500 - LINE_MARGIN.left - LINE_MARGIN.right;
+const LINE_HEIGHT = 300 - LINE_MARGIN.top - LINE_MARGIN.bottom;
+
+function lineChart(cause, country, sex) {
+    // Filter data to get correct country, cause, and sex
+    let filteredLineData = allData.filter(d => d.Cause === cause && d.Country === country && d.Sex === sex);
+
+    // debugging: check filtered data exists
+    if (filteredLineData.length === 0) {
+        console.warn(`no data for country: ${country}; cause: ${cause}; sex: ${sex}`);
+        return;
+    }
+
+    // clear existing line chart
+    d3.select("#line-chart").select("svg").remove();
+
+    // Create svg element
+    let svgLine = d3.select("#line-chart")
+                    .append("svg")
+                    .attr("width", LINE_WIDTH + LINE_MARGIN.left + LINE_MARGIN.right)
+                    .attr("height", LINE_HEIGHT + LINE_MARGIN.top + LINE_MARGIN.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${LINE_MARGIN.left}, ${LINE_MARGIN.top})`);
+
+    // Create scales
+    let xScaleLine = d3.scaleLinear()
+                        .domain(d3.extent(filteredLineData, d => d.Year))
+                        .range([0, LINE_WIDTH]);
+
+    let yScaleLine = d3.scaleLinear()
+                        .domain([0, d3.max(filteredLineData, d => d.Value)])
+                        .range([LINE_HEIGHT, 0]);
+
+    // debugging: check scales created properly
+    console.log(`xScale domain: ${xScaleLine.domain()}`);
+    console.log(`yScale domain: ${yScaleLine.domain()}`);
+
+    // Create axes
+    let xAxisLine = d3.axisBottom()
+                        .scale(xScaleLine)
+                        .ticks();
+    
+    let yAxisLine = d3.axisLeft()
+                        .scale(yScaleLine)
+                        .ticks();
+
+    // Create line mark
+    let lineMarker = d3.line()
+                        .x(d => xScaleLine(d.Year))
+                        .y(d => yScaleLine(d.Value));
+    // Add axes
+    svgLine.append("g")
+            .attr("transform", `translate(0, ${LINE_HEIGHT})`)
+            .call(xAxisLine);
+            
+    svgLine.append("g")
+            .call(yAxisLine);
+
+    // Add path element
+    svgLine.append("path")
+            .datum(filteredLineData)
+            .attr("class", "line")
+            .attr("fill", "none")
+            .attr("stroke", COLOUR_HIGHLIGHT)
+            .attr("stroke-width", 1.5)
+            .attr("d", lineMarker);
 };
 
 // Read in data from specified file
 d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
     // Convert str to num
-    data.forEach(d => d.Value = +d.Value);
+    data.forEach(d => {
+        d.Value = +d.Value;
+        d.Year = +d.Year;
+    });
 
     // Store all data
     allData = data;
@@ -141,25 +224,19 @@ d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
     createCauses(uniqueCauses);
 
     // get min and max of all years and create slider
-    let rangeYears = d3.extent(allData, d => +d.Year); // convert str to num
+    let rangeYears = d3.extent(allData, d => d.Year);
     createYears(rangeYears);
-
-    let sex = "Total";
 
     // Render initial view with default options
     renderChoropleth(cause, year, sex);
+
+    // Render static line chart
+    lineChart(cause, country, sex);
 }).catch(error => console.error("Error fetching CSV data: ", error));
 
 // Event listener for sex select
 d3.select("#sex").on("change", function() {
     sex = this.value;
     renderChoropleth(cause, year, sex);
+    lineChart(cause, country, sex);
 });
-
-
-// ~-*-~-*-~
-// TO DO:
-// Move mouseover events to separate functions
-// Add mouseover pop-ups
-// Reduce opacity of irrelevant countries
-// Add hover effects for countries
