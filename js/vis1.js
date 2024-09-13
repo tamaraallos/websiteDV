@@ -1,11 +1,17 @@
 // Define constants
 const WIDTH = 960;
 const HEIGHT = 960;
+
 const COLOUR_DEFAULT = "#666420";
 const COLOUR_HIGHLIGHT = "#420666";
 const COLOUR_EMPTY = "#ccc";
+
 const WIDTH_DEFAULT = "0.5px";
 const WIDTH_HIGHLIGHT = "0.8px";
+
+const LINE_MARGIN = {top: 20, right: 30, bottom: 40, left:50};
+const LINE_WIDTH = 500 - LINE_MARGIN.left - LINE_MARGIN.right;
+const LINE_HEIGHT = 300 - LINE_MARGIN.top - LINE_MARGIN.bottom;
 
 // Default chart options
 let cause, year, country;
@@ -64,11 +70,17 @@ function renderChoropleth(cause, year, sex) {
             .attr("stroke", COLOUR_DEFAULT)
             .attr("stroke-width", WIDTH_DEFAULT)
 
-            // mouseover should show pop-up infobox
             // probably move these to separate functions cause will get beefy with the hover stuff
             .on("mouseover", function(event, d) {
                 d3.select(this).style("stroke", COLOUR_HIGHLIGHT)
                     .style("stroke-width", WIDTH_HIGHLIGHT);
+
+                // Set frame pos and offset from cursor and make visible
+                // TODO: confine element to window to stop cropping
+                popup.style("left", (event.pageX + 15) + "px")
+                        .style("top", (event.pageY + 15) + "px")
+                        .style("display", "block");
+
                 country = d.properties.name;
                 lineChart(cause, country, sex);
             })
@@ -76,7 +88,9 @@ function renderChoropleth(cause, year, sex) {
                 d3.select(this).style("stroke", COLOUR_DEFAULT)
                     .style("stroke-width", WIDTH_DEFAULT);
                 country = "";
-                d3.select("#line-chart").select("svg").remove();
+                // hide popup frame
+                popup.style("display", "none");
+                popup.select("svg").remove();
             });
     }).catch(error => console.error("Error while loading GeoJSON data:", error));
 }
@@ -138,11 +152,17 @@ function createYears(rangeYears) {
   Adding line chart stuff below here.
   refactor afterwards. make it work first then make it better.
 */
-// these will need better names
-// also move to top with rest of constants
-const LINE_MARGIN = {top: 20, right: 30, bottom: 40, left:50};
-const LINE_WIDTH = 500 - LINE_MARGIN.left - LINE_MARGIN.right;
-const LINE_HEIGHT = 300 - LINE_MARGIN.top - LINE_MARGIN.bottom;
+// Create pop-up element
+let popup = d3.select("body")
+                .append("div")
+                .attr("id", "line-chart")
+                .style("position", "absolute")
+                .style("display", "none") // start hidden
+                .style("background-color", COLOUR_EMPTY)
+                .style("border", `1px solid ${COLOUR_HIGHLIGHT}`)
+                .style("padding", "10px")
+                .style("border-radius", "5px")
+                .style("pointer-events", "none"); // prevent frame blocking country change
 
 function lineChart(cause, country, sex) {
     if (!country) return;
