@@ -40,15 +40,18 @@ var tooltip = d3.select("body").append("div")
 // load the data
 d3.csv("all-top-level-causes.csv").then(function(data) {
     // extract unique causes and countries via sets
-    var causes = Array.from(new Set(data.map(d => d.Cause)));
-    var countries = Array.from(new Set(data.map(d => d.Country)));
+    // filter out the 'Total' sex data
+    var filteredData = data.filter(d => d.Sex !== "Total");
+
+    var causes = Array.from(new Set(filteredData.map(d => d.Cause)));
+    var countries = Array.from(new Set(filteredData.map(d => d.Country)));
     
     var dropdown = d3.select("#countryContainer").append("select")
         .attr("id", "countryDropdown")
         .on("change", function() {
             var selectedCountry = this.value;
             updateTitle(selectedCountry)
-            createGraph(data, causes, selectedCountry);
+            createGraph(filteredData, causes, selectedCountry);
         })
     
     dropdown.selectAll("option")
@@ -63,7 +66,7 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
     dropdown.property("value", defaultCountry)
 
     // create the graph
-    createGraph(data, causes, defaultCountry);
+    createGraph(filteredData, causes, defaultCountry);
     axisLabels()
 });
 
@@ -85,8 +88,11 @@ function createGraph(data, causes, country) {
             var decade = Math.floor(values[0].Year / 10) * 10;
             var obj = { Decade: `${decade}s` };
             causes.forEach(cause => {
-                obj[cause] = d3.sum(values.filter(d => d.Cause === cause), d => d.Value);
-            });
+                obj[cause] = d3.sum(
+                    values.filter(d => d.Cause === cause && d.Sex != "Total"),
+                    d => d.Value
+                );
+            })
             return obj;
         },
         d => Math.floor(d.Year / 10) * 10  // group by decade
