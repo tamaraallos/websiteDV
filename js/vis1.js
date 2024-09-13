@@ -8,8 +8,7 @@ const WIDTH_DEFAULT = "0.5px";
 const WIDTH_HIGHLIGHT = "0.8px";
 
 // Default chart options
-let cause, year;
-let country = "Australia";
+let cause, year, country;
 let sex = "Total";
 
 // Set up map projection
@@ -70,12 +69,14 @@ function renderChoropleth(cause, year, sex) {
             .on("mouseover", function(event, d) {
                 d3.select(this).style("stroke", COLOUR_HIGHLIGHT)
                     .style("stroke-width", WIDTH_HIGHLIGHT);
-                // add country variaable that changes on hover and call the line chart
+                country = d.properties.name;
+                lineChart(cause, country, sex);
             })
             .on("mouseout", function(event, d) {
                 d3.select(this).style("stroke", COLOUR_DEFAULT)
                     .style("stroke-width", WIDTH_DEFAULT);
-                // set country to null and remove line chart
+                country = "";
+                d3.select("#line-chart").select("svg").remove();
             });
     }).catch(error => console.error("Error while loading GeoJSON data:", error));
 }
@@ -127,7 +128,7 @@ function createYears(rangeYears) {
 
     // Update label and choro on change
     slider.on("input", function() {
-        year = +this.value; // convert to num  -> is this necessary with a slider? does the slider return nums or strings?
+        year = +this.value; // slider returns str, convert to num
         yearLabel.text(`Year: ${year}`);
         renderChoropleth(cause, year, sex);
     });
@@ -144,7 +145,11 @@ const LINE_WIDTH = 500 - LINE_MARGIN.left - LINE_MARGIN.right;
 const LINE_HEIGHT = 300 - LINE_MARGIN.top - LINE_MARGIN.bottom;
 
 function lineChart(cause, country, sex) {
+    if (!country) return;
+
     // Filter data to get correct country, cause, and sex
+    // would it be worth getting a list of all countries with data in the initial csv parsing /
+    // and then checking country against that much smaller set before filtering the entire data set?
     let filteredLineData = allData.filter(d => d.Cause === cause && d.Country === country && d.Sex === sex);
 
     // debugging: check filtered data exists
@@ -173,9 +178,8 @@ function lineChart(cause, country, sex) {
                         .domain([0, d3.max(filteredLineData, d => d.Value)])
                         .range([LINE_HEIGHT, 0]);
 
-    // debugging: check scales created properly
-    console.log(`xScale domain: ${xScaleLine.domain()}`);
-    console.log(`yScale domain: ${yScaleLine.domain()}`);
+    // debugging: country, years, max value
+    console.log(`${country}; ${xScaleLine.domain()}; peak ${yScaleLine.domain()[1]}`);
 
     // Create axes
     let xAxisLine = d3.axisBottom()
@@ -185,11 +189,6 @@ function lineChart(cause, country, sex) {
     let yAxisLine = d3.axisLeft()
                         .scale(yScaleLine)
                         .ticks();
-
-    // Create line mark
-    let lineMarker = d3.line()
-                        .x(d => xScaleLine(d.Year))
-                        .y(d => yScaleLine(d.Value));
     // Add axes
     svgLine.append("g")
             .attr("transform", `translate(0, ${LINE_HEIGHT})`)
@@ -198,7 +197,12 @@ function lineChart(cause, country, sex) {
     svgLine.append("g")
             .call(yAxisLine);
 
-    // Add path element
+    // Create line
+    let lineMarker = d3.line()
+                        .x(d => xScaleLine(d.Year))
+                        .y(d => yScaleLine(d.Value));
+
+    // Add line
     svgLine.append("path")
             .datum(filteredLineData)
             .attr("class", "line")
@@ -206,7 +210,7 @@ function lineChart(cause, country, sex) {
             .attr("stroke", COLOUR_HIGHLIGHT)
             .attr("stroke-width", 1.5)
             .attr("d", lineMarker);
-};
+}
 
 // Read in data from specified file
 d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
@@ -229,14 +233,11 @@ d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
 
     // Render initial view with default options
     renderChoropleth(cause, year, sex);
-
-    // Render static line chart
-    lineChart(cause, country, sex);
 }).catch(error => console.error("Error fetching CSV data: ", error));
 
 // Event listener for sex select
 d3.select("#sex").on("change", function() {
     sex = this.value;
     renderChoropleth(cause, year, sex);
-    lineChart(cause, country, sex);
+    lineChart(cause, country, sex); // keeping this -> cursor remains over country while user changes option with hotkeys
 });
