@@ -39,10 +39,10 @@ var tooltip = d3.select("body").append("div")
 
 // load the data
 d3.csv("all-top-level-causes.csv").then(function(data) {
-    // extract unique causes and countries via sets
     // filter out the 'Total' sex data
     var filteredData = data.filter(d => d.Sex !== "Total");
 
+    // extract unique causes and countries via sets
     var causes = Array.from(new Set(filteredData.map(d => d.Cause)));
     var countries = Array.from(new Set(filteredData.map(d => d.Country)));
     
@@ -51,7 +51,7 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
         .on("change", function() {
             var selectedCountry = this.value;
             updateTitle(selectedCountry)
-            createGraph(filteredData, causes, selectedCountry);
+            createGraph(filteredData, causes, selectedCountry, d3.select("#sexDropdown").property("value"));
         })
     
     dropdown.selectAll("option")
@@ -60,13 +60,30 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
         .append("option")
         .text(d => d)
         .attr("value", d => d);
+    
+    var sexDropDown = d3.select('#sexContainer').append("select")
+        .attr("id", "sexDropdown")
+        .on("change", function() {
+            var selectedSex = this.value;
+            createGraph(filteredData, causes, d3.select("#countryDropdown").property("value"), selectedSex);
+        })
+
+    sexDropDown.selectAll("option")
+        .data(["Female", "Male", "Total"]) // only genders options we need
+        .enter()
+        .append("option")
+        .text(d => d)
+        .attr("value", d => d);
+    
 
     var defaultCountry = countries[0]; // australia
+    var defaultSex = "Total" // show total initally
     updateTitle(defaultCountry)
     dropdown.property("value", defaultCountry)
+    sexDropDown.property("value", defaultSex)
 
     // create the graph
-    createGraph(filteredData, causes, defaultCountry);
+    createGraph(filteredData, causes, defaultCountry, defaultSex);
     axisLabels()
 });
 
@@ -78,8 +95,8 @@ function updateTitle(country) {
 }
 
 // create the graph
-function createGraph(data, causes, country) {
-    var countryData = data.filter(d => d.Country === country);
+function createGraph(data, causes, country, sex) {
+    var countryData = data.filter(d => d.Country === country && (d.Sex === sex || sex === "Total"));
     
     // group years into decades
     var decadeData = Array.from(d3.rollup(
