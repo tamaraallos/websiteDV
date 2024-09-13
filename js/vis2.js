@@ -3,8 +3,26 @@ var w = 1000;
 var h = 800;
 var padding = 100;
 
-// color scale
-var color = d3.scaleOrdinal(d3.schemeCategory10);
+// color scale - CHANGE LATER 
+var color = d3.scaleOrdinal([
+    "#1f77b4", // Blue
+    "#ff7f0e", // Orange
+    "#2ca02c", // Green
+    "#d62728", // Red
+    "#9467bd", // Purple
+    "#8c564b", // Brown
+    "#e377c2", // Pink
+    "#7f7f7f", // Gray
+    "#bcbd22", // Olive
+    "#17becf", // Teal
+    "#ff6f61", // Coral
+    "#6b5b95", // Slate Blue
+    "#feb236", // Mustard
+    "#d96459", // Salmon
+    "#f8c471", // Peach
+    "#c4e17f", // Light Green
+    "#9b59b6"  // Amethyst
+]);
 
 // scales
 var xScale = d3.scaleBand()
@@ -51,7 +69,7 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
         .on("change", function() {
             var selectedCountry = this.value;
             updateTitle(selectedCountry)
-            createGraph(filteredData, causes, selectedCountry, d3.select("#sexDropdown").property("value"));
+            createGraph(filteredData, getCheckedCauses(), selectedCountry, d3.select("#sexDropdown").property("value"));
         })
     
     dropdown.selectAll("option")
@@ -65,7 +83,7 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
         .attr("id", "sexDropdown")
         .on("change", function() {
             var selectedSex = this.value;
-            createGraph(filteredData, causes, d3.select("#countryDropdown").property("value"), selectedSex);
+            createGraph(filteredData, getCheckedCauses(), d3.select("#countryDropdown").property("value"), selectedSex);
         })
 
     sexDropDown.selectAll("option")
@@ -74,8 +92,31 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
         .append("option")
         .text(d => d)
         .attr("value", d => d);
-    
 
+    // checkbox for causes
+    var causeContainer = d3.select("#causeContainer");
+    causeContainer.selectAll("input")
+        .data(causes)
+        .enter()
+        .append("div")
+        .attr("class", "checkbox-container")
+        .each(function(cause) {
+            var div = d3.select(this);
+            div.append("input")
+                .attr("type", "checkbox")
+                .attr("id", `checkbox-${cause}`)
+                .attr("value", cause)
+                .property("checked", true)  // Set default to checked
+                .on("change", function() {
+                    var checkedCauses = getCheckedCauses();
+                    createGraph(filteredData, checkedCauses, d3.select("#countryDropdown").property("value"), d3.select("#sexDropdown").property("value"));
+                });
+            div.append("label")
+                .attr("for", `checkbox-${cause}`)
+                .text(cause);
+        });
+
+    
     var defaultCountry = countries[0]; // australia
     var defaultSex = "Total" // show total initally
     updateTitle(defaultCountry)
@@ -83,9 +124,16 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
     sexDropDown.property("value", defaultSex)
 
     // create the graph
-    createGraph(filteredData, causes, defaultCountry, defaultSex);
+    createGraph(filteredData, getCheckedCauses(), defaultCountry, defaultSex);
     axisLabels()
 });
+
+// function that checks the checked causes
+function getCheckedCauses() {
+    return d3.selectAll("#causeContainer input:checked")
+        .nodes()
+        .map(node => node.value);
+}
 
 // function to update the title of page by country chosen
 function updateTitle(country) {
@@ -228,4 +276,5 @@ function createLegend(causes) {
             .text(cause);  // display the cause
     });
 }
+
 
