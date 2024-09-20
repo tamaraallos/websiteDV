@@ -9,6 +9,10 @@
     flex: 0;
 }
 
+.chart-container h2, h3 {
+    text-align: center;
+}
+
 #legendContainer {
     background-color: rgb(235, 231, 231);
     padding: 10px;
@@ -16,7 +20,8 @@
 
 .legend {
     margin-left: 10px;
-    margin-top: 100px;
+    margin-top: 170px;
+    margin-bottom: 10px;
 }
 
 .legend-item {
@@ -29,32 +34,24 @@
     width: 20px;
     height: 20px;
     margin-right: 8px;
-    border: 1px solid rgb(0, 0, 0);
+    border: 1.3px solid black;
 }
 
 .legend-label {
     font-size: 14px;
-    color: #333;
+    color: black;
 }
 
-/* drop down countries */
-
+/* country and sex option styling */
 .filterContainer {
-    background-color: rgb(235, 231, 231);
-    display: flex; 
+   display: flex;
 }
 
-.countryOptions {
+.countryOptions, .sexOptions {
     margin: 10px;
-    text-align: center;
 }
 
-#countryDropdown {
+#countryDropdown, #sexDropdown {
     padding: 5px;
     font-size: 16px;
-}
-
-.filterContainer {
-    display: flex;
-    align-items: flex-start;
 }
