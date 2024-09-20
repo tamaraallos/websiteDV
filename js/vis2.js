@@ -43,8 +43,16 @@ function resetLegend(causes) {
     causes.forEach(cause => {
         selectedCauses[cause] = true; // all causes selected by default
     });
-    d3.selectAll(".legend-color-box, .legend-label")
-        .style("opacity", 1);
+    
+    // for each legend item reset style
+    d3.selectAll(".legend-item").each(function() {
+        d3.select(this).select(".legend-color-box")
+            .style("opacity", 1);
+
+        d3.select(this).select(".legend-label")
+            .style("opacity", 1)
+            .style("text-decoration", "none");
+    });
 }
 
 // scales
@@ -286,7 +294,6 @@ function axisLabels() {
         .text("Deaths per 100,000 Inhabitants");
 }
 
-
 // creates the legend and toggles visibility for different causes 
 function createLegend(filteredData, causes, country, sex) {
     var legendContainer = d3.select("#legendContainer");
@@ -297,19 +304,22 @@ function createLegend(filteredData, causes, country, sex) {
             .attr("class", "legend-item")
             .style("cursor", "pointer")
             .on("click", function() {
-
-                selectedCauses[cause] = !selectedCauses[cause]; // toggle selection state
+                // toggle selection state
+                selectedCauses[cause] = !selectedCauses[cause];
 
                 // filter active causes based on selection state
                 var activeCauses = causes.filter(c => selectedCauses[c]);
                 createGraph(filteredData, activeCauses, country, sex);
                 updateTitle(country, sex);
-            
-                var opacity = selectedCauses[cause] ? 1 : 0.4;
-                
-                d3.select(this).select(".legend-color-box, .legend-label")
-                    .style("opacity", opacity)
 
+                // style changes to the items on legend to show toggle
+                var opacity = selectedCauses[cause] ? 1 : 0.5;
+                d3.select(this).select(".legend-color-box")
+                    .style("opacity", opacity);
+                
+                d3.select(this).select(".legend-label")
+                    .style("opacity", opacity)
+                    .style("text-decoration", selectedCauses[cause] ? "none" : "line-through");
             });
 
         // append color box to legend item    
@@ -321,6 +331,8 @@ function createLegend(filteredData, causes, country, sex) {
         // append label to legend item
         legendItem.append("span")
             .attr("class", "legend-label")
+            .style("color", "white") 
+            .style("text-decoration", "none") 
             .text(cause); // display the cause
     });
 }
