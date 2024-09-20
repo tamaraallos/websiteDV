@@ -29,7 +29,7 @@
     width: 20px;
     height: 20px;
     margin-right: 8px;
-    border: 1px solid #000;
+    border: 1px solid rgb(0, 0, 0);
 }
 
 .legend-label {
@@ -39,9 +39,9 @@
 
 /* drop down countries */
 
-.filterContainer, h3 {
-    text-align: center;
+.filterContainer {
     background-color: rgb(235, 231, 231);
+    display: flex; 
 }
 
 .countryOptions {
@@ -54,3 +54,7 @@
     font-size: 16px;
 }
 
+.filterContainer {
+    display: flex;
+    align-items: flex-start;
+}
