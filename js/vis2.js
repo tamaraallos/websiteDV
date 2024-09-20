@@ -229,7 +229,7 @@ function createGraph(data, causes, country, sex) {
             var cause = d3.select(this.parentNode).datum().key;
             var valueDeaths = Math.floor(d[1] - d[0]);
 
-            tooltip.html("Causes " + cause + "<br>Value: " + valueDeaths + ' unitOfMeasure')
+            tooltip.html("Causes " + cause + "<br>Value: " + valueDeaths + ' deaths per 100,000 inhabitants')
                 .style("visibility", "visible")
                 .style("left", (event.pageX + 15) + "px") // right of cursor (x-axis)
                 .style("top", (event.pageY - 50) + "px"); // above cursor (y-axis)
@@ -280,7 +280,7 @@ function axisLabels() {
         .attr("x", - (h / 2)) 
         .attr("y", padding - 70) 
         .attr("transform", "rotate(-90)") // rotate to side
-        .text("Death Billion");
+        .text("Deaths per 100,000 Inhabitants");
 }
 
 
