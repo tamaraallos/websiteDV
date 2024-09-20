@@ -1,0 +1,57 @@
+/* legend */
+.chart-container {
+    display: flex; 
+    align-items: flex-start;
+}
+
+#chart {
+    padding-left: 100px;
+    flex: 0;
+}
+
+.chart-container h2, h3 {
+    text-align: center;
+}
+
+#legendContainer {
+    background-color: #e648e6;
+    padding: 10px;
+}
+
+.legend {
+    margin-left: 10px;
+    margin-top: 170px;
+    margin-bottom: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.legend-color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border: 1.3px solid black;
+}
+
+.legend-label {
+    font-size: 14px;
+    color: black;
+}
+
+/* country and sex option styling */
+.filterContainer {
+   display: flex;
+}
+
+.countryOptions, .sexOptions {
+    margin: 10px;
+}
+
+#countryDropdown, #sexDropdown {
+    padding: 5px;
+    font-size: 16px;
+}

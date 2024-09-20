@@ -1,0 +1,76 @@
+/* Variables */
+:root {
+    --colour-text: #ffffff;
+    --colour-text-highlight: #d600d6;
+    --colour-background: #0a1135;
+    --colour-background-highlight: #420420;
+}
+
+/* CSS reset */
+
+* {
+    margin: 0;
+}
+
+body {
+    line-height: 1.5;
+}
+
+h1, h2, h3, p {
+    overflow-wrap: break-word;
+}
+
+/* img, svg {
+    display: block;
+    max-width: 100%;
+} */
+
+input, button, select {
+    font: inherit;
+}
+
+/* a e s t h e t i c */
+
+html {
+    hanging-punctuation: first last;
+}
+
+body {
+    min-height: 100vh;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    font-family: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+    background-color: var(--colour-background);
+    color: var(--colour-text);
+}
+
+/* nav bar */
+a {
+    color: var(--colour-text-highlight);
+    font-size: 20px;
+    padding-left: 15px;
+    text-decoration: none;
+    position: relative;
+}
+
+a:hover {
+    color: #ff00ff;
+    border-bottom: 2px solid #0a1135;
+}
+
+
+header {
+    width: 100%;
+    padding: 10px 0;
+    overflow: hidden;
+    background-color: var(--colour-background-highlight);
+}
+
+h1 {
+    color: var(--colour-text-highlight);
+}
+
+footer {
+    padding: 30px;
+}

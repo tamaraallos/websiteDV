@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="description" content="Data Visualisation">
+	<meta name="keywords" content="HTML, CSS, D3">
+	<meta name="author" content="Tamara Allos, Benjamin Fraser">
+	<title>Stacked Bar Chart</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/vis2.css">
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" id="home">Home</a>
+            <a href="vis1.html" id="vis1nav">Global View</a>
+            <a href="vis2.html" id="vis2nav">Per-Country View</a>
+        </nav>
+
+        <h1 id="title">
+            Visualising Global Mortality Causes Over Time
+        </h1>
+
+        <p id="subheading">
+            Deaths per 100,000 inhabitants per Cause of Mortality
+        </p>
+    </header>
+    <div class="chart-container">
+        <div id="chart">
+            <h1 id="chart-title">Stacked Bar Chart</h1>
+            <h3 id="chart-subtitle">Hello</h3>
+        </div>
+        <div class="legend-filter-container">
+            <div class="legend" id="legendContainer">
+                <h2>Legend</h2>
+                <h3>Select Cause to Filter</h3>
+            </div>
+            <div class="filterContainer">
+                <div class="countryOptions" id="countryContainer">
+                    <label for="countryDropdown">Select Country:</label>
+                </div>
+                <div class="sexOptions" id="sexContainer">
+                    <label for="sexDropdown">Select Sex:</label>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/vis2.js"></script>
+    <br><br>
+    <footer>COS30045 Data Visualisation, Teaching Period 2 2024, Tamara Allos &amp; Benjamin Fraser</footer>
+</body>
+</html>
