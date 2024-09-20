@@ -3,26 +3,33 @@ var w = 1000;
 var h = 800;
 var padding = 100;
 
-// color scale - CHANGE LATER 
-var color = d3.scaleOrdinal([
-    "#1f77b4", // Blue
-    "#ff7f0e", // Orange
-    "#2ca02c", // Green
-    "#d62728", // Red
-    "#9467bd", // Purple
-    "#8c564b", // Brown
-    "#e377c2", // Pink
-    "#7f7f7f", // Gray
-    "#bcbd22", // Olive
-    "#17becf", // Teal
-    "#ff6f61", // Coral
-    "#6b5b95", // Slate Blue
-    "#feb236", // Mustard
-    "#d96459", // Salmon
-    "#f8c471", // Peach
-    "#c4e17f", // Light Green
-    "#9b59b6"  // Amethyst
-]);
+// color mapping each cause has its own color
+var colorMapping = {
+    "Certain infectious and parasitic diseases": "#1f77b4",
+    "Mental and behavioural disorders": "#ff7f0e",
+    "Neoplasms": "#2ca02c",
+    "Congenital malformations, deformations and chromosomal abnormalities": "#d62728",
+    "Diseases of the skin and subcutaneous tissue": "#9467bd",
+    "Diseases of the respiratory system": "#8c564b",
+    "Diseases of the digestive system": "#e377c2",
+    "External causes of mortality": "#7f7f7f",
+    "Diseases of the nervous system": "#bcbd22",
+    "Symptoms, signs, ill-defined causes": "#17becf",
+    "Diseases of the circulatory system": "#ff6f61",
+    "Certain conditions originating in the perinatal period": "#6b5b95",
+    "Codes for special purposes: COVID-19": "#feb236",
+    "Endocrine, nutritional and metabolic diseases": "#d96459",
+    "Diseases of the blood and blood-forming organs": "#f8c471",
+    "Diseases of the genitourinary system": "#c4e17f",
+    "Diseases of the musculoskeletal system and connective tissue": "#9b59b6",
+    "Pregnancy, childbirth and the puerperium": "#b070a1"
+};
+
+// returns corresponding color for given cause
+var color = function(cause) {
+    return colorMapping[cause];
+}
+
 
 // scales
 var xScale = d3.scaleBand()
@@ -184,7 +191,7 @@ function createGraph(data, causes, country, sex) {
     var newGroups = groups.enter()
         .append("g")
         .classed("stack-group", true)
-        .style("fill", (d, i) => color(i))
+        .style("fill", d => color(d.key));
 
     // create bars within each stack group
     var bars = newGroups.merge(groups).selectAll("rect")
@@ -199,6 +206,10 @@ function createGraph(data, causes, country, sex) {
         .attr("y", d => yScale(d[1]))
         .attr("height", d => yScale(d[0]) - yScale(d[1]))
         .attr("width", xScale.bandwidth())
+        .style("fill", (d, i, nodes) => {
+            var cause = d3.select(nodes[i].parentNode).datum().key;
+            return color(cause);
+        })
         .on("mouseover", function(event, d) {
             var cause = d3.select(this.parentNode).datum().key;
             var valueDeaths = Math.floor(d[1] - d[0]);
@@ -263,18 +274,18 @@ function createLegend(causes) {
     var legendContainer = d3.select("#legendContainer");
     legendContainer.selectAll(".legend-item").remove(); // clear existing legend items so they dont pile up
 
-    causes.forEach((cause, i) => {
+    causes.forEach(cause => {
         var legendItem = legendContainer.append("div")
             .attr("class", "legend-item");
 
         legendItem.append("div")
             .attr("class", "legend-color-box")
-            .style("background-color", color(i));  // use the color scale
+            .style("background-color", color(cause));
 
         legendItem.append("span")
             .attr("class", "legend-label")
-            .text(cause);  // display the cause
-    });
+            .text(cause) // display the cause
+    })
 }
 
 
