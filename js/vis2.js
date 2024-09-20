@@ -3,6 +3,14 @@ var w = 1000;
 var h = 800;
 var padding = 100;
 
+// selected country and sex
+var selectedCountry = "";
+var selectedSex = "Total"; // default value  
+
+// initalise causes
+var selectedCauses = {}; // keep track of selected
+var causes = [];
+
 // color mapping each cause has its own color
 var colorMapping = {
     "Certain infectious and parasitic diseases": "#1f77b4",
@@ -28,8 +36,16 @@ var colorMapping = {
 // returns corresponding color for given cause
 var color = function(cause) {
     return colorMapping[cause];
-}
+}   
 
+// resets causes and legend opacity when users change filter
+function resetLegend(causes) {
+    causes.forEach(cause => {
+        selectedCauses[cause] = true; // all causes selected by default
+    });
+    d3.selectAll(".legend-color-box, .legend-label")
+        .style("opacity", 1);
+}
 
 // scales
 var xScale = d3.scaleBand()
@@ -68,15 +84,21 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
     var filteredData = data.filter(d => d.Sex !== "Total");
 
     // extract unique causes and countries via sets
-    var causes = Array.from(new Set(filteredData.map(d => d.Cause)));
+    causes = Array.from(new Set(filteredData.map(d => d.Cause)));
     var countries = Array.from(new Set(filteredData.map(d => d.Country)));
+
+    // initalise selectedCauses to include all causes
+    causes.forEach(cause => {
+        selectedCauses[cause] = true; // all causes selected by default
+    });
     
     var dropdown = d3.select("#countryContainer").append("select")
         .attr("id", "countryDropdown")
         .on("change", function() {
-            var selectedCountry = this.value;
-            updateTitle(selectedCountry)
-            createGraph(filteredData, getCheckedCauses(), selectedCountry, d3.select("#sexDropdown").property("value"));
+            selectedCountry = this.value;
+            resetLegend(causes);
+            updateTitle(selectedCountry, selectedSex);
+            createGraph(filteredData, causes, selectedCountry, d3.select("#sexDropdown").property("value"));
         })
     
     dropdown.selectAll("option")
@@ -89,8 +111,10 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
     var sexDropDown = d3.select('#sexContainer').append("select")
         .attr("id", "sexDropdown")
         .on("change", function() {
-            var selectedSex = this.value;
-            createGraph(filteredData, getCheckedCauses(), d3.select("#countryDropdown").property("value"), selectedSex);
+            selectedSex = this.value;
+            resetLegend(causes);
+            updateTitle(selectedCountry, selectedSex);
+            createGraph(filteredData, causes, d3.select("#countryDropdown").property("value"), selectedSex);
         })
 
     sexDropDown.selectAll("option")
@@ -99,60 +123,51 @@ d3.csv("all-top-level-causes.csv").then(function(data) {
         .append("option")
         .text(d => d)
         .attr("value", d => d);
-
-    // checkbox for causes
-    var causeContainer = d3.select("#causeContainer");
-    causeContainer.selectAll("input")
-        .data(causes)
-        .enter()
-        .append("div")
-        .attr("class", "checkbox-container")
-        .each(function(cause) {
-            var div = d3.select(this);
-            div.append("input")
-                .attr("type", "checkbox")
-                .attr("id", `checkbox-${cause}`)
-                .attr("value", cause)
-                .property("checked", true)  // Set default to checked
-                .on("change", function() {
-                    var checkedCauses = getCheckedCauses();
-                    createGraph(filteredData, checkedCauses, d3.select("#countryDropdown").property("value"), d3.select("#sexDropdown").property("value"));
-                });
-            div.append("label")
-                .attr("for", `checkbox-${cause}`)
-                .text(cause);
-        });
-
     
-    var defaultCountry = countries[0]; // australia
-    var defaultSex = "Total" // show total initally
-    updateTitle(defaultCountry)
-    dropdown.property("value", defaultCountry)
-    sexDropDown.property("value", defaultSex)
+    // set default values    
+    selectedCountry = countries[0]; // australia
+    dropdown.property("value", selectedCountry)
+    sexDropDown.property("value", selectedSex)
+
+    // initial title update
+    updateTitle(selectedCountry, selectedSex);
 
     // create the graph
-    createGraph(filteredData, getCheckedCauses(), defaultCountry, defaultSex);
+    createGraph(filteredData, causes, selectedCountry, selectedSex);
+
+    // create legend
+    createLegend(filteredData, causes, selectedCountry, selectedSex)
     axisLabels()
 });
 
-// function that checks the checked causes
-function getCheckedCauses() {
-    return d3.selectAll("#causeContainer input:checked")
-        .nodes()
-        .map(node => node.value);
-}
 
-// function to update the title of page by country chosen
-function updateTitle(country) {
+// function to update the title and subtitle of page by filters chosen
+function updateTitle(country, sex) {
     d3.select("#chart-title")
-        .text(`${country}'s Mortality Causes Over Time`)
+        .text(`${country}'s Mortality Causes Over Time (${sex})`)
         .style("text-align", "center")
+        
+    var activeCauses = Object.keys(selectedCauses).filter(cause => selectedCauses[cause]);
+
+    var subtitle;
+    // checks length of active causes, and modifies subtitle based on results
+    if (activeCauses.length === 0) {
+        subtitle = 'No Causes Selected';
+    } else if (activeCauses.length === causes.length) {
+        subtitle = 'By all causes';
+    } else {
+        var displayCauses = activeCauses.slice(0, 3) // get first 3 causes
+        var otherCount = activeCauses.length - displayCauses.length;
+        subtitle = `${displayCauses.join(", ")}${otherCount > 0 ? `, and ${otherCount} other cause${otherCount > 1 ? 's' : ''}` : ''}`
+    }
+    d3.select("#chart-subtitle")
+        .text(subtitle)
+        .style("text-align", "center");
 }
 
 // create the graph
 function createGraph(data, causes, country, sex) {
     var countryData = data.filter(d => d.Country === country && (d.Sex === sex || sex === "Total"));
-    
     // group years into decades
     var decadeData = Array.from(d3.rollup(
         countryData,
@@ -240,7 +255,6 @@ function createGraph(data, causes, country, sex) {
 
     // update axes and create legend
     updateScales();
-    createLegend(causes)
 }
 
 // updates the y and x axis scales
@@ -270,22 +284,40 @@ function axisLabels() {
 }
 
 
-function createLegend(causes) {
+// creates the legend and toggles visibility for different causes 
+function createLegend(filteredData, causes, country, sex) {
     var legendContainer = d3.select("#legendContainer");
-    legendContainer.selectAll(".legend-item").remove(); // clear existing legend items so they dont pile up
-
+    
+    // create legend item for each cause
     causes.forEach(cause => {
         var legendItem = legendContainer.append("div")
-            .attr("class", "legend-item");
+            .attr("class", "legend-item")
+            .style("cursor", "pointer")
+            .on("click", function() {
 
+                selectedCauses[cause] = !selectedCauses[cause]; // toggle selection state
+
+                // filter active causes based on selection state
+                var activeCauses = causes.filter(c => selectedCauses[c]);
+                createGraph(filteredData, activeCauses, country, sex);
+                updateTitle(country, sex);
+            
+                var opacity = selectedCauses[cause] ? 1 : 0.4;
+                
+                d3.select(this).select(".legend-color-box, .legend-label")
+                    .style("opacity", opacity)
+
+            });
+
+        // append color box to legend item    
         legendItem.append("div")
             .attr("class", "legend-color-box")
-            .style("background-color", color(cause));
+            .style("background-color", color(cause))
+            .style("opacity", 1);
 
+        // append label to legend item
         legendItem.append("span")
             .attr("class", "legend-label")
-            .text(cause) // display the cause
-    })
+            .text(cause); // display the cause
+    });
 }
-
-
