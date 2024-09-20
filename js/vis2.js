@@ -51,6 +51,7 @@ function resetLegend(causes) {
 var xScale = d3.scaleBand()
     .range([padding, w - padding])
     .paddingInner(0.3) // space between the bars
+    
     .paddingOuter(0.2) // space for the axis
 
 var yScale = d3.scaleLinear()
@@ -72,8 +73,8 @@ var yAxisGroup = svg.append("g")
 // tool tip - styles (pop-up box)
 var tooltip = d3.select("body").append("div")
     .style("position", "absolute")
-    .style("background-color", "#fcfcf9")
-    .style("border", "solid 1px black")
+    .style("background-color", "#420420")
+    .style("border", "solid 1px #e4e4e4")
     .style("padding", "10px")
     .style("border-radius", "3px")
     .style("visibility", "hidden");  // hide tool tip    
@@ -272,6 +273,7 @@ function axisLabels() {
         .attr("text-anchor", "middle")
         .attr("x", w / 2) 
         .attr("y", h - padding + 70)
+        .style("fill", "white")
         .text("Years (in decades)");
 
     svg.append("text")
@@ -280,6 +282,7 @@ function axisLabels() {
         .attr("x", - (h / 2)) 
         .attr("y", padding - 70) 
         .attr("transform", "rotate(-90)") // rotate to side
+        .style("fill", "white")
         .text("Deaths per 100,000 Inhabitants");
 }
 
