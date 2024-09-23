@@ -69,16 +69,33 @@ function renderChoropleth(cause, year, sex) {
             .attr("fill", d => d.properties.value ? colour(d.properties.value) : COLOUR_EMPTY)
             .attr("stroke", COLOUR_DEFAULT)
             .attr("stroke-width", WIDTH_DEFAULT)
-
-            // probably move these to separate functions cause will get beefy with the hover stuff
             .on("mouseover", function(event, d) {
                 d3.select(this).style("stroke", COLOUR_HIGHLIGHT)
                     .style("stroke-width", WIDTH_HIGHLIGHT);
 
+                // get dimensions of window
+                let viewWidth = window.innerWidth;
+                let viewHeight = window.innerHeight;
+                console.log(`${viewWidth}, ${viewHeight}`);
+
+                // default pos
+                let popupX = event.pageX + 15; // offset right
+                let popupY = event.pageY + 15; // offset below
+
+                // check for cropping
+                if (popupX + LINE_WIDTH > viewWidth) {
+                    console.log("crop right");
+                    popupX = event.pageX - LINE_WIDTH - 15; // offset left if would clip right
+                }
+
+                if (popupY + LINE_HEIGHT > viewHeight) {
+                    console.log("crop bot");
+                    popupY = event.pageY - LINE_HEIGHT - 15; //offset above if would clip below
+                }
+                
                 // Set frame pos and offset from cursor and make visible
-                // TODO: confine element to window to stop cropping
-                popup.style("left", (event.pageX + 15) + "px")
-                        .style("top", (event.pageY + 15) + "px")
+                popup.style("left", `${popupX}px`)
+                        .style("top", `${popupY}px`)
                         .style("display", "block");
 
                 country = d.properties.name;
