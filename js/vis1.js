@@ -278,3 +278,46 @@ d3.select("#sex").on("change", function() {
     renderChoropleth(cause, year, sex);
     lineChart(cause, country, sex); // keeping this -> cursor remains over country while user changes option with hotkeys
 });
+
+// hotkeys stuff
+function changeCause() {
+    // get current cause
+    let causeSelect = d3.select("#cause-select").node();
+
+    // get current and next index then update
+    let currentIndex = causeSelect.selectedIndex;
+    let nextIndex = (currentIndex + 1) % causeSelect.options.length; // loops back to start
+    causeSelect.selectedIndex = nextIndex;
+
+    // get new cause' value
+    cause = causeSelect.options[nextIndex].value;
+
+    // update choro and line
+    renderChoropleth(cause, year, sex);
+    lineChart(cause, country, sex);
+}
+
+function changeSex() {
+    let sexes = ["Total", "Male", "Female"];
+
+    // get current and next index then update
+    let currentIndex = sexes.indexOf(sex);
+    let nextIndex = (currentIndex + 1) % sexes.length;
+    sex = sexes[nextIndex];
+
+    // update sex menu -> should just do it same as causes but it works
+    d3.select("#sex").property("value", sex);
+
+    // update choro and line
+    renderChoropleth(cause, year, sex);
+    lineChart(cause, country, sex);
+}
+
+// Listener for hotkeys
+d3.select("body").on("keydown", function(event) {
+    if (event.key === "c") {
+        changeCause();
+    } else if (event.key === "s") {
+        changeSex();
+    }
+});
