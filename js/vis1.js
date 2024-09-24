@@ -4,7 +4,7 @@ const HEIGHT = 960;
 
 const COLOUR_DEFAULT = "#666420";
 const COLOUR_HIGHLIGHT = "#420666";
-const COLOUR_EMPTY = "#ccc";
+const COLOUR_EMPTY = "#cccccc";
 
 const WIDTH_DEFAULT = "0.5px";
 const WIDTH_HIGHLIGHT = "0.8px";
@@ -16,6 +16,8 @@ const LINE_HEIGHT = 300 - LINE_MARGIN.top - LINE_MARGIN.bottom;
 // Default chart options
 let cause, year, country;
 let sex = "Total";
+
+let rangeYears;
 
 // Set up map projection
 let projection = d3.geoMercator()
@@ -149,6 +151,7 @@ function createYears(rangeYears) {
                     .text(`Year: ${rangeYears[0]}`); // default to min year
                     
     let slider = yearDiv.append("input")
+                        .attr("id", "year-slider")
                         .attr("type", "range")
                         .attr("min", rangeYears[0])
                         .attr("max", rangeYears[1])
@@ -175,7 +178,7 @@ let popup = d3.select("body")
                 .attr("id", "line-chart")
                 .style("position", "absolute")
                 .style("display", "none") // start hidden
-                .style("background-color", COLOUR_EMPTY)
+                .style("background-color", `${COLOUR_EMPTY}CC`) // 8-digit "hex", CC is 80% opacity. need better names now.
                 .style("border", `1px solid ${COLOUR_HIGHLIGHT}`)
                 .style("padding", "10px")
                 .style("border-radius", "5px")
@@ -265,7 +268,7 @@ d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
     createCauses(uniqueCauses);
 
     // get min and max of all years and create slider
-    let rangeYears = d3.extent(allData, d => d.Year);
+    rangeYears = d3.extent(allData, d => d.Year);
     createYears(rangeYears);
 
     // Render initial view with default options
@@ -313,11 +316,36 @@ function changeSex() {
     lineChart(cause, country, sex);
 }
 
+function changeYear(direction) {
+    if (!direction && year > rangeYears[0]) {
+        year--;
+        console.warn(`${year}`);
+    } else if (direction && year < rangeYears[1]) {
+        year++;
+        console.warn(`${year}`);
+    }
+
+    d3.select("#year-slider").property("value", `${year}`);
+    d3.select("#year-label").text(`Year: ${year}`);
+    renderChoropleth(cause, year, sex);
+}
+
 // Listener for hotkeys
 d3.select("body").on("keydown", function(event) {
-    if (event.key === "c") {
-        changeCause();
-    } else if (event.key === "s") {
-        changeSex();
+    switch (event.key) {
+        case "c":
+            changeCause();
+            break;
+        case "s":
+            changeSex();
+            break;
+        case "ArrowLeft":
+            changeYear(0);
+            break;
+        case "ArrowRight":
+            changeYear(1);
+            break;
+        default:
+            console.log(`${event.key}`);
     }
 });
