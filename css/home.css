@@ -37,3 +37,12 @@ img {
     text-decoration: none;
     color: #ff00ff;
 }
+
+.headerLink a{
+    color: white;
+}
+
+.headerLink a:hover {
+    color: #ff00ff;
+    border-bottom: none;
+}
