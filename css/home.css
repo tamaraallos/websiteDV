@@ -1,0 +1,48 @@
+#navbuttons {
+    padding-top: 100px;
+    height: 80px;
+    display: flex;
+    justify-content: space-evenly;
+    margin-bottom: 100px;
+}
+
+#navbuttons button {
+    font-size: 20px;
+    background-color: #420420;
+    color: white;
+}
+#navbuttons button:hover {
+    background-color: #5e0e32;
+    font-size: 20px;
+    color: rgb(211, 210, 210);
+    border-bottom: 2px solid #d600d6;
+    cursor: pointer;
+}
+
+.infocard {
+    background-color: #5e0e32; 
+    border-radius: 6px; 
+    box-shadow: 0 5px 10px black; 
+    padding: 35px;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+img {
+    align-items: center;
+    max-width: 70%;
+} 
+
+.infocard a:hover {
+    text-decoration: none;
+    color: #ff00ff;
+}
+
+.headerLink a{
+    color: white;
+}
+
+.headerLink a:hover {
+    color: #ff00ff;
+    border-bottom: none;
+}

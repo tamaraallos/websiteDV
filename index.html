@@ -3,83 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+	<meta name="description" content="Data Visualisation, D3, Home, Charts">
+	<meta name="keywords" content="HTML, CSS, D3">
+	<meta name="author" content="Tamara Allos, Benjamin Fraser">
+    <title>Home</title>
     <link rel="stylesheet" href="/css/style.css">
-    <!-- <script src="https://d3js.org/d3.v7.min.js"></script> -->
+    <link rel="stylesheet" href="/css/home.css">
 </head>
-
 <body>
     <header>
         <nav>
-            <a href="index.html" id="home">Home</a>
-            <a href="vis1.html" id="vis1nav">Global View</a>
-            <a href="vis2.html" id="vis2nav">Per-Country View</a>
+            <a href="index.html" id="home" target="_blank">Home</a>
+            <a href="vis1.html" id="vis1nav" target="_blank">Global View</a>
+            <a href="vis2.html" id="vis2nav" target="_blank">Per-Country View</a>
         </nav>
-
-        <h1 id="title">
-            Visualising Global Mortality Causes Over Time
-        </h1>
-
-        <p id="subheading">
-            How have the proportional rates of various causes of mortality changed over the past sixty years?
-        </p>
+        <h1 id="title">Visualising Global Mortality Causes Over Time</h1>
+        <h4 id="subheading">How have the proportional rates of various causes of mortality changed over the past sixty years?</h4>
     </header>
-
     <div id="navbuttons">
-        <button id="vis1">Compare global rates for each cause of mortality</button>
-        <button id="vis2">View all causes of mortality for an individual country</button>
+        <a href="vis1.html"><button type="button" id="vis1">Compare global rates for each cause of mortality</button></a>
+        <a href="vis2.html"><button type="button" id="vis2">View all causes of mortality for an individual country</button></a>
     </div>
-
-    <p>
-        Scroll for more information
-    </p>
-
     <div class="infocard">
-        <h2>
-            Data Sources and Transformation
-        </h2>
-
-        <p>
-            All data were sourced from the <a href="https://www.oecd-ilibrary.org/social-issues-migration-health/data/oecd-health-statistics_health-data-en">OECD Health Statistics</a> datasets. The <a href="https://www.oecd-ilibrary.org/social-issues-migration-health/data/oecd-health-statistics/oecd-health-data-health-status_data-00540-en?parentId=http%3A%2F%2Finstance.metastore.ingenta.com%2Fcontent%2Fcollection%2Fhealth-data-en">Health status</a> dataset includes data about <a href="https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CHealth%23HEA%23%7CHealth%20status%23HEA_STA%23&pg=0&fc=Topic&bp=true&snb=16&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_HEALTH_STAT%40DF_COM&df[ag]=OECD.ELS.HD&df[vs]=1.0">Causes of mortality</a>, which formed the foundation of our final data.    
-        </p>
-
+        <div class="headerLink"><a href="https://www.oecd.org/en.html" target="_blank"><h2>Data Sources and Transformation</h2></a></div>
+        <p>All data were sourced from the <a href="https://www.oecd-ilibrary.org/social-issues-migration-health/data/oecd-health-statistics_health-data-en">OECD Health Statistics</a> datasets. The <a href="https://www.oecd-ilibrary.org/social-issues-migration-health/data/oecd-health-statistics/oecd-health-data-health-status_data-00540-en?parentId=http%3A%2F%2Finstance.metastore.ingenta.com%2Fcontent%2Fcollection%2Fhealth-data-en">Health status</a> dataset includes data about <a href="https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CHealth%23HEA%23%7CHealth%20status%23HEA_STA%23&pg=0&fc=Topic&bp=true&snb=16&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_HEALTH_STAT%40DF_COM&df[ag]=OECD.ELS.HD&df[vs]=1.0">Causes of mortality</a>, which formed the foundation of our final data.    </p>
         <br>
-        
-        <p>
-            The unfiltered dataset contains ~952,000 data points, and was transformed in a relatively simple manner to reduce the overall size and bloat. As introduced in previous Data Science units, KNIME was utilised to smoothly mould our data to a more desirable form.
-        </p>
-
+        <p>The unfiltered dataset contains ~952,000 data points, and was transformed in a relatively simple manner to reduce the overall size and bloat. As introduced in previous Data Science units, KNIME was utilised to smoothly mould our data to a more desirable form.</p>
     </div>
-
     <div class="infocard">
-        <h2>
-            Visualisation One: World Map/Chloropleth
-        </h2>
-
-        <img src="images/vis1-screenshot.png" alt="Static image of Visualisation One" id="vis1static">
-        
-        <p>
-            this chart was made by us it's good this is filler text
-        </p>
+        <div class="headerLink"><a href="vis1.html" target="_blank"><h2>Visualisation One: World Map/Chloropleth</h2></a></div>
+        <img src="images/vis1.jpg" alt="Static image of Visualisation One" id="vis1static">
+        <p>insert text</p>
     </div>
-
     <div class="infocard">
-        <h2>
-            Visualisation Two: Stacked Area Chart
-        </h2>
-        
-        <img src="images/vis2-screenshot.png" alt="Static image of Visualisation Two">
-        
-        <p>
-            this chart was also made by us but it's even better yowee
+        <div class="headerLink"><a href="vis2.html" target="_blank"><h2> Visualisation Two: Stacked Area Chart</h2></a></div>
+        <img src="images/vis2.jpg" alt="Stacked Bar Chart of Mortality Rates by Australia">
+        <p>This visaulisation is of mortality data using a stacked bar chart. This is to showcase trends in deaths causes by
+            a varity of different causes of mortality over time, grouped by decades. It allows users to interactively explore
+            the causes of death by selecting specific gender, countries and causes, filtering the data dynamically.
+            <br><br>
+            The visualisation features colour-coded bars, where each cause of death is represented by a specific color, making
+            it easier to compare. A tooltip is also added to provide further detail about specific causes and their associated
+            death rates when users hover over the bar. There is a slight transition that also occurs when users do hover over a bar.
+            <br><br>
+            Lastly, a legend table is provided to provide clarity to users for what each cause colour represents as well as enabling users
+            to toggle causes on and off. This updates the chart dynamically and shows only the selected causes. The causes filter restarts
+            when users choose a different country/sex.
+            <br><br>
+            This is useful for public health professional, researchers, policymakers or people interested in mortality who want to track how
+            mortality patterns evolve, identify patterns, prominent causes of death  in different countries, or evaluate the impact of
+            health interventions over time. By visualisaing this data in a stacked bar chart, users can gain insights into trends quickly that would
+            be difficult to see through raw datasets.
+            <br><br>
+            Muzner's guidelines and Tufte's design principles were taken into consideration when developing the stacked bar chart. The chart design
+            emphiased on accuracy, clarity and effiency in portraying the data. Munzner's guideline focused on matching visual representation to the task,
+            using appriopiate encodings, and balancing usability and complexity. While Tufte's principles of avoiding unncessary clutter, implementing
+            data-ink maximisation and making sure that every visual element provides a purpose in communicating data insight. As a result of
+            these principles, they help to create an informative and inuttive visualisaiton.
         </p>
     </div>
-
-    <footer>
-        This website was designed and built by <code>redacted</code> and <code>redacted</code>.
-        <br>
-        Subscribe to our Patreon for more.
-    </footer>
+    <footer>COS30045 Data Visualisation, Teaching Period 2 2024, Tamara Allos &amp; Benjamin Fraser</footer>
 </body>
-
 </html>
