@@ -196,11 +196,18 @@ function lineChart(cause, country) {
     let maleData = filteredLineData.filter(d => d.Sex === "Male");
     let femaleData = filteredLineData.filter(d => d.Sex === "Female");
 
+    // Sort chronologically to get rid of line
+    maleData.sort((a, b) => a.Year - b.Year);
+    femaleData.sort((a, b) => a.Year - b.Year);
+
     // debugging: check filtered data exists
     if (maleData.length === 0 && femaleData.length === 0) {
         console.warn(`no data for country: ${country}; cause: ${cause}`);
         return;
     }
+    // debugging: check both data sets for NaN or Null to find that pesky line
+    console.log("Male Data:", maleData);
+    console.log("Female Data:", femaleData);
 
     // clear existing line chart
     d3.select("#line-chart").select("svg").remove();
@@ -243,6 +250,7 @@ function lineChart(cause, country) {
 
     // Create line
     let lineMarker = d3.line()
+                        .defined(d => !isNaN(d.Value)) // ignore missing data points
                         .x(d => xScaleLine(d.Year))
                         .y(d => yScaleLine(d.Value));
 
