@@ -4,7 +4,7 @@ const HEIGHT = 960;
 
 const COLOUR_DEFAULT = "#666420";
 const COLOUR_HIGHLIGHT = "#420666";
-const COLOUR_EMPTY = "#cccccc";
+const COLOUR_EMPTY = "#808080";
 
 const WIDTH_DEFAULT = "0.5px";
 const WIDTH_HIGHLIGHT = "0.8px";
@@ -12,6 +12,10 @@ const WIDTH_HIGHLIGHT = "0.8px";
 const LINE_MARGIN = {top: 20, right: 30, bottom: 40, left:50};
 const LINE_WIDTH = 500 - LINE_MARGIN.left - LINE_MARGIN.right;
 const LINE_HEIGHT = 300 - LINE_MARGIN.top - LINE_MARGIN.bottom;
+
+const COLOUR_MALE = "#ffaaee";
+const COLOUR_FEMALE = "#eeffaa";
+const COLOUR_FRAME = "#CCCCCCCC"; // 8-digit hex, incl. opacity
 
 // Default chart options
 let cause, year, country;
@@ -101,7 +105,7 @@ function renderChoropleth(cause, year, sex) {
                         .style("display", "block");
 
                 country = d.properties.name;
-                lineChart(cause, country, sex);
+                lineChart(cause, country);
             })
             .on("mouseout", function(event, d) {
                 d3.select(this).style("stroke", COLOUR_DEFAULT)
@@ -137,7 +141,7 @@ function createCauses(uniqueCauses) {
     select.on("change", function() {
         cause = this.value;
         renderChoropleth(cause, year, sex);
-        lineChart(cause, country, sex);
+        lineChart(cause, country);
     });
 }
 
@@ -178,23 +182,23 @@ let popup = d3.select("body")
                 .attr("id", "line-chart")
                 .style("position", "absolute")
                 .style("display", "none") // start hidden
-                .style("background-color", `${COLOUR_EMPTY}CC`) // 8-digit "hex", CC is 80% opacity. need better names now.
+                .style("background-color", COLOUR_FRAME)
                 .style("border", `1px solid ${COLOUR_HIGHLIGHT}`)
                 .style("padding", "10px")
                 .style("border-radius", "5px")
                 .style("pointer-events", "none"); // prevent frame blocking country change
 
-function lineChart(cause, country, sex) {
+function lineChart(cause, country) {
     if (!country) return;
 
-    // Filter data to get correct country, cause, and sex
-    // would it be worth getting a list of all countries with data in the initial csv parsing /
-    // and then checking country against that much smaller set before filtering the entire data set?
-    let filteredLineData = allData.filter(d => d.Cause === cause && d.Country === country && d.Sex === sex);
+    // Filter data to get correct country, cause
+    let filteredLineData = allData.filter(d => d.Cause === cause && d.Country === country);
+    let maleData = filteredLineData.filter(d => d.Sex === "Male");
+    let femaleData = filteredLineData.filter(d => d.Sex === "Female");
 
     // debugging: check filtered data exists
-    if (filteredLineData.length === 0) {
-        console.warn(`no data for country: ${country}; cause: ${cause}; sex: ${sex}`);
+    if (maleData.length === 0 && femaleData.length === 0) {
+        console.warn(`no data for country: ${country}; cause: ${cause}`);
         return;
     }
 
@@ -242,14 +246,35 @@ function lineChart(cause, country, sex) {
                         .x(d => xScaleLine(d.Year))
                         .y(d => yScaleLine(d.Value));
 
-    // Add line
+    // Add lines
     svgLine.append("path")
-            .datum(filteredLineData)
+            .datum(maleData)
             .attr("class", "line")
             .attr("fill", "none")
-            .attr("stroke", COLOUR_HIGHLIGHT)
+            .attr("stroke", COLOUR_MALE)
             .attr("stroke-width", 1.5)
             .attr("d", lineMarker);
+
+    svgLine.append("path")
+            .datum(femaleData)
+            .attr("class", "line")
+            .attr("fill", "none")
+            .attr("stroke", COLOUR_FEMALE)
+            .attr("stroke-width", 1.5)
+            .attr("d", lineMarker);
+
+    // Add colour legend
+    svgLine.append("text")
+            .attr("x", LINE_WIDTH - LINE_MARGIN.right)
+            .attr("y", LINE_MARGIN.top)
+            .attr("fill", COLOUR_MALE)
+            .text("Male");
+
+    svgLine.append("text")
+            .attr("x", LINE_WIDTH - LINE_MARGIN.right)
+            .attr("y", LINE_MARGIN.top + 20)
+            .attr("fill", COLOUR_FEMALE)
+            .text("Female");
 }
 
 // Read in data from specified file
@@ -279,7 +304,6 @@ d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
 d3.select("#sex").on("change", function() {
     sex = this.value;
     renderChoropleth(cause, year, sex);
-    lineChart(cause, country, sex); // keeping this -> cursor remains over country while user changes option with hotkeys
 });
 
 // hotkeys stuff
@@ -297,7 +321,7 @@ function changeCause() {
 
     // update choro and line
     renderChoropleth(cause, year, sex);
-    lineChart(cause, country, sex);
+    lineChart(cause, country);
 }
 
 function changeSex() {
@@ -313,16 +337,13 @@ function changeSex() {
 
     // update choro and line
     renderChoropleth(cause, year, sex);
-    lineChart(cause, country, sex);
 }
 
 function changeYear(direction) {
     if (!direction && year > rangeYears[0]) {
         year--;
-        console.warn(`${year}`);
     } else if (direction && year < rangeYears[1]) {
         year++;
-        console.warn(`${year}`);
     }
 
     d3.select("#year-slider").property("value", `${year}`);
