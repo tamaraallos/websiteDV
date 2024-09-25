@@ -23,11 +23,11 @@ body {
 h1, h2, h3, p {
     overflow-wrap: break-word;
 }
-
+/* 
 img, svg {
     display: block;
     max-width: 100%;
-}
+} */
 
 input, button, select {
     font: inherit;
