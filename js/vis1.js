@@ -18,10 +18,7 @@ const COLOUR_FEMALE = "#eeffaa";
 const COLOUR_FRAME = "#CCCCCCCC"; // 8-digit hex, incl. opacity
 
 // Default chart options
-let cause, year, country;
-let sex = "Total";
-
-let rangeYears;
+let cause, year, country, sex, rangeYears;
 
 // Set up map projection
 let projection = d3.geoMercator()
@@ -32,6 +29,7 @@ let projection = d3.geoMercator()
 let path = d3.geoPath(projection);
 
 // Set colour range
+let colourFlag = false;
 let colour = d3.scaleSequential(d3.interpolatePurples); // d3.interpolate gives better colour scaling
 
 // Set up SVG canvas
@@ -46,16 +44,13 @@ let allData = [];
 // Merge CSV data and GeoJSON map /
 // Render map and apply fill per value
 function renderChoropleth(cause, year, sex) {
-    // Have to filter data first to get correct domain for cause
+    // Create a lookup map to merge CSV and GeoJSON data
+    let dataMap = new Map();
     let filteredData = allData.filter(d => d.Cause === cause && d.Year === year && d.Sex === sex);
+    filteredData.forEach(d => dataMap.set(d.Country, d.Value));
 
     // Set colour domain from new category values
     colour.domain(d3.extent(filteredData, d => d.Value));
-
-    // Create a lookup map to merge CSV and GeoJSON data
-    let dataMap = new Map();
-    // split this into two sections -> need to filter before updating domain
-    filteredData.forEach(d => dataMap.set(d.Country, d.Value));
 
     // Read in GeoJSON file
     // try figure out if can move this to only read the geojson once but don't think so
@@ -90,12 +85,10 @@ function renderChoropleth(cause, year, sex) {
 
                 // check for cropping
                 if (popupX + LINE_WIDTH > viewWidth) {
-                    console.log("crop right");
                     popupX = event.pageX - LINE_WIDTH - 15; // offset left if would clip right
                 }
 
                 if (popupY + LINE_HEIGHT > viewHeight) {
-                    console.log("crop bot");
                     popupY = event.pageY - LINE_HEIGHT - 15; //offset above if would clip below
                 }
                 
@@ -121,6 +114,10 @@ function renderChoropleth(cause, year, sex) {
 // Takes a set of causes and creates a select /
 // menu with an option for each cause.
 function createCauses(uniqueCauses) {
+    d3.select("#causes").append("label")
+        .attr("for", "cause-select")
+        .text("Cause: ");
+
     // add select element
     let select = d3.select("#causes")
                     .append("select")
@@ -172,11 +169,38 @@ function createYears(rangeYears) {
     });
 }
 
-/*
-  Adding line chart stuff below here.
-  refactor afterwards. make it work first then make it better.
-*/
-// Create pop-up element
+// Takes a set of causes and creates a select /
+// menu with an option for each cause.
+function createSexes(sexes) {
+    // add label
+    d3.select("#sex").append("label")
+                .attr("for", "sex-select")
+                .text("Sex: ");
+
+    // add select element
+    let sexSelect = d3.select("#sex")
+                    .append("select")
+                    .attr("id", "sex-select");
+
+    // Append options to select element
+    sexSelect.selectAll("option")
+            .data(sexes)
+            .enter()
+            .append("option")
+            .attr("value", d => d)
+            .text(d => d);
+
+    sex = sexes[0]; // default to first value
+    
+    // Event listener for sex select
+    sexSelect.on("change", function() {
+        sex = this.value;
+        renderChoropleth(cause, year, sex);
+    });
+
+}
+
+// Create pop-up element for line chart
 let popup = d3.select("body")
                 .append("div")
                 .attr("id", "line-chart")
@@ -205,10 +229,7 @@ function lineChart(cause, country) {
         console.warn(`no data for country: ${country}; cause: ${cause}`);
         return;
     }
-    // debugging: check both data sets for NaN or Null to find that pesky line
-    console.log("Male Data:", maleData);
-    console.log("Female Data:", femaleData);
-
+    
     // clear existing line chart
     d3.select("#line-chart").select("svg").remove();
 
@@ -240,6 +261,7 @@ function lineChart(cause, country) {
     let yAxisLine = d3.axisLeft()
                         .scale(yScaleLine)
                         .ticks();
+
     // Add axes
     svgLine.append("g")
             .attr("transform", `translate(0, ${LINE_HEIGHT})`)
@@ -314,19 +336,17 @@ d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
     rangeYears = d3.extent(allData, d => d.Year);
     createYears(rangeYears);
 
+    // create sexes
+    let sexes = Array.from(new Set(allData.map(d => d.Sex)));
+    createSexes(sexes);
+
     // Render initial view with default options
     renderChoropleth(cause, year, sex);
 }).catch(error => console.error("Error fetching CSV data: ", error));
 
-// Event listener for sex select
-d3.select("#sex").on("change", function() {
-    sex = this.value;
-    renderChoropleth(cause, year, sex);
-});
-
 // hotkeys stuff
 function changeCause() {
-    // get current cause
+    // get cause selection element
     let causeSelect = d3.select("#cause-select").node();
 
     // get current and next index then update
@@ -334,7 +354,7 @@ function changeCause() {
     let nextIndex = (currentIndex + 1) % causeSelect.options.length; // loops back to start
     causeSelect.selectedIndex = nextIndex;
 
-    // get new cause' value
+    // get new cause value
     cause = causeSelect.options[nextIndex].value;
 
     // update choro and line
@@ -343,17 +363,15 @@ function changeCause() {
 }
 
 function changeSex() {
-    let sexes = ["Total", "Male", "Female"];
+    // get element
+    let sexSelect = d3.select("#sex-select").node();
+    // get index and update
+    let currentIndex = sexSelect.selectedIndex;
+    let nextIndex = (currentIndex + 1) % sexSelect.options.length;
+    sexSelect.selectedIndex = nextIndex;
+    sex = sexSelect.options[nextIndex].value;
 
-    // get current and next index then update
-    let currentIndex = sexes.indexOf(sex);
-    let nextIndex = (currentIndex + 1) % sexes.length;
-    sex = sexes[nextIndex];
-
-    // update sex menu -> should just do it same as causes but it works
-    d3.select("#sex").property("value", sex);
-
-    // update choro and line
+    // update choro
     renderChoropleth(cause, year, sex);
 }
 
@@ -366,6 +384,16 @@ function changeYear(direction) {
 
     d3.select("#year-slider").property("value", `${year}`);
     d3.select("#year-label").text(`Year: ${year}`);
+    renderChoropleth(cause, year, sex);
+}
+
+function changeColour() {
+    colourFlag = !colourFlag;
+    if (colourFlag) {
+        colour = d3.scaleSequential(d3.interpolateGreens);
+    } else {
+        colour = d3.scaleSequential(d3.interpolatePurples);
+    }
     renderChoropleth(cause, year, sex);
 }
 
@@ -383,6 +411,9 @@ d3.select("body").on("keydown", function(event) {
             break;
         case "ArrowRight":
             changeYear(1);
+            break;
+        case "f": // f for fill obviously
+            changeColour();
             break;
         default:
             console.log(`${event.key}`);
