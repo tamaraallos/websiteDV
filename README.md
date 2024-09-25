@@ -15,19 +15,18 @@ Website Data Visualisation
 - /** docstrings
 - read GeoJSON once only
 - crop bottom of svg properly
-- ~~hotkeys for cause/sex so can remain focused on one country~~
 - better names for everything
 #### Vis 1 hover display / Line Chart
 - _When the user hovers their cursor over any country, a pop-up element will show a line chart that displays the currently selected cause's values for each year, for that country._
 - ~~create line chart~~
 - ~~line chart reads from same `all-causes` data~~
 - ~~hover over new country updates chart country~~
-- x-axis scale: highlight when domain changes, e.g. South Africa's records starting in 1996 -> other option is to hardcode 1960-2023 but yuck empty space
 - ~~hover over country shows pop-up frame~~
 - ~~mouseout removes pop-up frame~~
 - ~~line chart inside pop-up frame~~
 - line chart: filter all data once instead of each time function is called
-- show both male & female, ignore total
-- add fix for female-specific causes
+- ~~show both male & female, ignore total~~
 - ~~contain pop-up element to window to stop cropping~~
-- colours and stuff
+- ~~colours and stuff~~
+- ~~hotkeys for cause/sex so can remain focused on one country~~
+- ~~labels for colour and country~~

@@ -273,16 +273,26 @@ function lineChart(cause, country) {
 
     // Add colour legend
     svgLine.append("text")
-            .attr("x", LINE_WIDTH - LINE_MARGIN.right)
+            .attr("x", LINE_WIDTH)
             .attr("y", LINE_MARGIN.top)
             .attr("fill", COLOUR_MALE)
+            .attr("text-anchor", "end")
             .text("Male");
 
     svgLine.append("text")
-            .attr("x", LINE_WIDTH - LINE_MARGIN.right)
+            .attr("x", LINE_WIDTH)
             .attr("y", LINE_MARGIN.top + 20)
             .attr("fill", COLOUR_FEMALE)
+            .attr("text-anchor", "end")
             .text("Female");
+
+    // Add Country label
+    svgLine.append("text")
+            .attr("x", LINE_WIDTH)
+            .attr("y", LINE_HEIGHT + LINE_MARGIN.bottom)
+            .attr("fill", COLOUR_DEFAULT)
+            .attr("text-anchor", "end")
+            .text(country);
 }
 
 // Read in data from specified file
