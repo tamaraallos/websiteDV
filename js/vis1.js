@@ -319,6 +319,29 @@ function createYears(rangeYears) {
     });
 }
 
+// Create legend for hotkeys
+let hotkeys = [
+    {key: "c", description: "Change cause"},
+    {key: "f", description: "Change colour palette"},
+    {key: "s", description: "Change sex"},
+    {key: "ArrowLeft", description: "Previous year"},
+    {key: "ArrowRight", description: "Next year"},
+    {key: "hover", description: "Hover over a country to view the timeline"},
+];
+
+let legend = d3.select("#hotkey-legend")
+    .append("ul")
+    .attr("class", "hotkey-list");
+
+legend.selectAll("li")
+    .data(hotkeys)
+    .enter()
+    .append("li")
+    .style("list-style-type", "none")
+    .style("display", "inline")
+    .style("margin", "15px")
+    .text(d => `${d.key}: ${d.description}`);
+
 // Event listeners for user input
 d3.select("body").on("keydown", function(event) {
     switch (event.key) {
