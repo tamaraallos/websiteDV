@@ -21,7 +21,6 @@ let allData = [];
 let altColour = false;
 let cause, year, country, sex, rangeYears;
 
-
 // Set up SVG canvas
 let svg = d3.select("#choropleth")
     .append("svg")
@@ -50,7 +49,6 @@ let popup = d3.select("body")
     .style("padding", "10px")
     .style("border-radius", "5px")
     .style("pointer-events", "none"); // prevent frame blocking country change
-
 
 // Helper function for filtering data by cause, country, sex, or year
 function filterData(attributes = {}) {
@@ -133,7 +131,7 @@ function handleMouseOut() {
     popup.select("svg").remove();
 }
 
-// Filters data by cause and country, then sex, then shows values for all years in a pop-up line chart
+// Filters data by cause, country, sex then shows values for all years in a pop-up line chart
 function renderLineChart() {
     if (!country) return;
 
@@ -321,7 +319,6 @@ function createYears(rangeYears) {
     });
 }
 
-
 // Event listeners for user input
 d3.select("body").on("keydown", function(event) {
     switch (event.key) {
@@ -393,7 +390,6 @@ function changeYear(direction) {
     d3.select("#year-label").text(`Year: ${year}`);
     renderChoropleth();
 }
-
 
 // Read in data from specified file, call setup functions, render initial choropleth
 d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {

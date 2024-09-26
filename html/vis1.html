@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global Standardised Deaths by Cause over Time</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/index.html" id="home">Home</a></li>
+                <li><a href="vis1.html" id="vis1nav">Global View</a></li>
+                <li><a href="vis2.html" id="vis2nav">Per-Country View</a></li>
+            </ul>
+        </nav>
+        <h1 id="title">Visualising Global Mortality Causes Over Time</h1>
+        <p id="subheading">Deaths per 100,000 inhabitants per Cause of Mortality</p>
+    </header>
+
+    <main>
+        <!-- category, year, sex selections -->
+        <div id="causes"></div>
+        <div id="years"></div>
+        <div id="sex"></div>
+        <!-- chart -->
+        <div id="choropleth"></div>
+    </main>
+
+    <footer>
+        This website was designed and built by <code>redacted</code> and <code>redacted</code>.
+        <br>
+        Follow us on Pinterest for more.
+    </footer>
+</body>
+<script src="/js/vis1.js"></script>
+</html>

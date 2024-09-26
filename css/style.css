@@ -6,11 +6,9 @@
     --colour-text-highlight: #d600d6;
     --colour-background: #0a1135;
     --colour-background-highlight: #420420;
+    --colour-button-highlight: #333888;
 }
 
-/*
-    CSS reset
-*/
 
 * {
     margin: 0;
@@ -23,19 +21,10 @@ body {
 h1, h2, h3, p {
     overflow-wrap: break-word;
 }
-/* 
-img, svg {
-    display: block;
-    max-width: 100%;
-} */
 
 input, button, select {
     font: inherit;
 }
-
-/*
-    a e s t h e t i c
-*/
 
 html {
     hanging-punctuation: first last;
@@ -56,20 +45,43 @@ header {
     padding: 10px 0;
     overflow: hidden;
     background-color: var(--colour-background-highlight);
-}
 
-h1 {
-    color: var(--colour-text-highlight);
+    li {
+        display: inline;
+        list-style-type: none;
+    }
 }
 
 a {
     color: var(--colour-text-highlight);
+    font-size: 20px;
+    text-decoration: none;
+    position: relative;
 
     &:hover {
         background-color: var(--colour-background);
     }
 }
 
+h1 {
+    color: var(--colour-text-highlight);
+}
+
+#navbuttons {
+    height: 50px;
+    margin: 30px 0;
+
+    button {
+        background-color: var(--colour-background-highlight);
+        color: var(--colour-text);
+
+        &:hover {
+            background-color: var(--colour-button-highlight);
+            cursor: pointer;
+        }
+    }
+}
+
 footer {
-    padding: 30px;
+    padding: 10px;
 }
