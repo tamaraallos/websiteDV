@@ -88,7 +88,7 @@ var tooltip = d3.select("body").append("div")
     .style("visibility", "hidden");  // hide tool tip    
 
 // load the data
-d3.csv("/data/all-top-level-causes.csv").then(function(data) {
+d3.csv("/resources/all-top-level-causes.csv").then(function(data) {
     // filter out the 'Total' sex data
     var filteredData = data.filter(d => d.Sex !== "Total");
 

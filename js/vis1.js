@@ -415,7 +415,7 @@ function changeYear(direction) {
 }
 
 // Read in data from specified file, call setup functions, render initial choropleth
-d3.csv("../data/causes/all-top-level-causes.csv").then(function(data) {
+d3.csv("../resources/all-top-level-causes.csv").then(function(data) {
     // Convert str to num
     data.forEach(d => {
         d.Value = +d.Value;
