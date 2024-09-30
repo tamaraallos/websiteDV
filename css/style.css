@@ -1,12 +1,10 @@
-/* Variables */
 :root {
     --colour-text: #ffffff;
     --colour-text-highlight: #d600d6;
     --colour-background: #0a1135;
     --colour-background-highlight: #420420;
+    --colour-button-highlight: #333888;
 }
-
-/* CSS reset */
 
 * {
     margin: 0;
@@ -20,19 +18,13 @@ h1, h2, h3, p {
     overflow-wrap: break-word;
 }
 
-/* img, svg {
-    display: block;
-    max-width: 100%;
-} */
-
 input, button, select {
     font: inherit;
 }
 
-/* a e s t h e t i c */
-
 html {
     hanging-punctuation: first last;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -45,32 +37,71 @@ body {
     color: var(--colour-text);
 }
 
-/* nav bar */
-a {
-    color: var(--colour-text-highlight);
-    font-size: 20px;
-    padding-left: 15px;
-    text-decoration: none;
-    position: relative;
-}
-
-a:hover {
-    color: #ff00ff;
-    border-bottom: 2px solid #0a1135;
-}
-
-
 header {
     width: 100%;
     padding: 10px 0;
     overflow: hidden;
     background-color: var(--colour-background-highlight);
+
+    li {
+        display: inline;
+        list-style-type: none;
+    }
+}
+
+a {
+    color: var(--colour-text-highlight);
+    font-size: 20px;
+    text-decoration: none;
+    position: relative;
+
+    &:hover {
+        background-color: var(--colour-background);
+    }
 }
 
 h1 {
     color: var(--colour-text-highlight);
 }
 
+.card {
+    background-color: var(--colour-background); 
+    border-radius: 6px; 
+    box-shadow: 0 5px 10px var(--colour-button-highlight); 
+    padding: 35px;
+    margin: 20px auto;
+    max-width: 80%;
+
+    a > h2 {
+        color: white;
+
+        &:hover {
+            text-decoration: none;
+            color: var(--colour-text-highlight);
+        }
+    }
+}
+
+#navbuttons {
+    height: 50px;
+    margin: 30px 0;
+
+    button {
+        background-color: var(--colour-background-highlight);
+        color: var(--colour-text);
+
+        &:hover {
+            background-color: var(--colour-button-highlight);
+            cursor: pointer;
+        }
+    }
+}
+
+#a-top {
+    color: white;
+    font-style: italic;
+}
+
 footer {
-    padding: 30px;
+    padding: 10px;
 }

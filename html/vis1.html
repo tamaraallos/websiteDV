@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Data Visualisation, D3">
+    <meta name="keywords" content="HTML, CS, JS, D3">
+    <title>Global Standardised Deaths by Cause over Time</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/index.html">Home</a></li>
+                <li><a href="/html/vis1.html">Global View</a></li>
+                <li><a href="/html/vis2.html">Per-Country View</a></li>
+            </ul>
+        </nav>
+        <h1>Visualising Global Mortality Causes Over Time</h1>
+        <p>Deaths per 100,000 inhabitants per Cause of Mortality</p>
+    </header>
+
+    <main>
+        <section class="card">
+            <!-- category, year, sex selections -->
+            <div id="causes"></div>
+            <div id="years"></div>
+            <div id="sex"></div>
+            <!-- chart -->
+            <div id="choropleth"></div>
+            <div id="hotkey-legend"></div>
+        </section>
+    </main>
+
+    <footer>
+        COS30045 Data Visualisation<br>TP2, 2024
+    </footer>
+</body>
+<script src="/js/vis1.js"></script>
+</html>
