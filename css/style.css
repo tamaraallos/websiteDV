@@ -24,6 +24,7 @@ input, button, select {
 
 html {
     hanging-punctuation: first last;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -71,9 +72,13 @@ h1 {
     margin: 20px auto;
     max-width: 80%;
 
-    a:hover {
-        text-decoration: none;
-        color: var(--colour-text-highlight);
+    a > h2 {
+        color: white;
+
+        &:hover {
+            text-decoration: none;
+            color: var(--colour-text-highlight);
+        }
     }
 }
 
@@ -90,6 +95,11 @@ h1 {
             cursor: pointer;
         }
     }
+}
+
+#a-top {
+    color: white;
+    font-style: italic;
 }
 
 footer {

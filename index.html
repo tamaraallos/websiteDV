@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Data Visualisation, D3">
+    <meta name="keywords" content="HTML, CS, JS, D3">
     <title>Visualising Global Mortality Causes Over Time</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -11,83 +13,119 @@
     <header>
         <nav>
             <ul>
-                <li><a href="index.html" id="home">Home</a></li>
-                <li><a href="html/vis1.html" id="vis1nav">Global View</a></li>
-                <li><a href="html/vis2.html" id="vis2nav">Per-Country View</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="/html/vis1.html">Global View</a></li>
+                <li><a href="/html/vis2.html">Per-Country View</a></li>
             </ul>
         </nav>
-        <h1 id="title">Visualising Global Mortality Causes Over Time</h1>
-        <p id="subheading">How have the proportional rates of various causes of mortality changed over the past sixty years?</p>
+        <h1>Visualising Global Mortality Causes Over Time</h1>
+        <p>Viewing and interacting with sixty years of data from all around the world</p>
     </header>
 
     <main>
         <section class="card">
-            <h2>Visualisation One: Combination Choropleth and Line Chart</h2>
+            <a href="/html/vis1.html"><h2>Visualisation One: Combination Choropleth and Line Chart</h2></a>
 
             <figure>
                 <img id="choropleth-image" src="" alt="">
                 <figcaption id="choropleth-caption"></figcaption>
             </figure>
-            <button id="choropleth-image-button">Change image</button>
 
-            <p>
+            <br>
+            <button id="choropleth-image-button"></button>
+            <br><br>
+
+            <p>This interactive choropleth, built using <a id="a0">D3.js</a>, presents global mortality rates for major 
+                causes of death using data from the <a id="a1">OECD Health Statistics</a> reports. The data are 
+                represented using a colour scale to quantise the relative severity of each cause across different sex, 
+                and year, as well as offering a broad, at-a-glance comparison of any regional mortality patterns.
+                <br><br>
+                When the user hovers over any country on the choropleth, a detailed line chart appears. This line chart 
+                illustrates mortality trends for the selected cause over time, spanning all available historical data. 
+                This interactive feature enables users to not only compare global data but also to examine how a 
+                particular cause of death has evolved in individual countries over the years. This line chart is 
+                intended to serve a similar purpose as a generic tooltip, being that it grants the viewer an additional 
+                level of information on top of the baseline choropoleth visualisation.
+                <br><br>
+                The choropleth is placed on a card-like element, which includes a legend to clarify the available user 
+                interactions - a set of five hotkeys is available for use, each brushing the data in a distinct manner. 
+                Users can filter data dynamically by toggling between different causes and years, enabling the chance to 
+                identify regional or global patterns. The end-user experience has had considerable thought, with ease of 
+                use and intuitive controls at front of mind. For those which suffer a colour-vision deficiency, an 
+                alternate colour palette is accessible with the <code>f</code> (fill) key. For those interested in 
+                scrubbing through the various causes for any particular country while viewing the full-time line chart, 
+                the ability to use the <code>c</code> (cause) hotkey exists. For the baseline choropleth visualisation, 
+                the user is also able to scrub through the years (forwards or backwards) with the left and right arrow 
+                keys, and is able to cycle through the available sexes with the <code>s</code> key.
+                <br><br>
+                The intent for this visualisation was to provide a broad view of global rates of death from various 
+                parent-level categories, rather than flood the viewer with over 50 distinct sub-categories; this design 
+                approach was selected to not over-clutter the data and to ensure that the viewer is able to take in as 
+                much information at a glance as possible without requiring manual thought. Ideally, the ability to view 
+                pockets of geographical trends may allow health professionals, researchers, and even policymakers to 
+                make changes to their understanding and approach towards public health at a global scale.
             </p>
         </section>
 
         <section id="navbuttons">
-            <a href="/html/vis1.html"><button id="vis1">Compare global rates for each cause of mortality</button></a>
-            <a href="/html/vis2.html"><button id="vis2">View all causes of mortality for an individual country</button></a>
+            <a href="/html/vis1.html"><button>Compare global rates for each cause of mortality</button></a>
+            <a href="/html/vis2.html"><button>View data for all causes by decade</button></a>
         </section>
 
         <section class="card">
-            <h2>Visualisation Two: Stacked Area Chart</h2>
+            <a href="/html/vis2.html"><h2>Visualisation Two: Stacked Area Chart</h2></a>
             
-            <!-- <img src="resources/vis2-screenshot.png" alt="Static image of Visualisation Two"> -->
+            <img src="resources/vis2.jpg" alt="Static image of Visualisation Two">
             
-            <p>This visaulisation is of mortality data using a stacked bar chart. This is to showcase trends in deaths causes by
-                a varity of different causes of mortality over time, grouped by decades. It allows users to interactively explore
-                the causes of death by selecting specific gender, countries and causes, filtering the data dynamically.
+            <p>This visaulisation is of mortality data using a stacked bar chart. This is to showcase trends in deaths 
+                causes by a varity of different causes of mortality over time, grouped by decades. It allows users to 
+                interactively explore the causes of death by selecting specific gender, countries and causes, filtering 
+                the data dynamically.
                 <br><br>
-                The visualisation features colour-coded bars, where each cause of death is represented by a specific color, making
-                it easier to compare. A tooltip is also added to provide further detail about specific causes and their associated
-                death rates when users hover over the bar. There is a slight transition that also occurs when users do hover over a bar.
+                The visualisation features colour-coded bars, where each cause of death is represented by a specific 
+                color, making it easier to compare. A tooltip is also added to provide further detail about specific 
+                causes and their associated death rates when users hover over the bar. There is a slight transition that 
+                also occurs when users do hover over a bar.
                 <br><br>
-                Lastly, a legend table is provided to provide clarity to users for what each cause colour represents as well as enabling users
-                to toggle causes on and off. This updates the chart dynamically and shows only the selected causes. The causes filter restarts
-                when users choose a different country/sex.
+                Lastly, a legend table is provided to provide clarity to users for what each cause colour represents as 
+                well as enabling users to toggle causes on and off. This updates the chart dynamically and shows only 
+                the selected causes. The causes filter restarts when users choose a different country/sex.
                 <br><br>
-                This is useful for public health professional, researchers, policymakers or people interested in mortality who want to track how
-                mortality patterns evolve, identify patterns, prominent causes of death  in different countries, or evaluate the impact of
-                health interventions over time. By visualisaing this data in a stacked bar chart, users can gain insights into trends quickly that would
-                be difficult to see through raw datasets.
+                This is useful for public health professional, researchers, policymakers or people interested in 
+                mortality who want to track how mortality patterns evolve, identify patterns, prominent causes of death 
+                in different countries, or evaluate the impact of health interventions over time. By visualisaing this 
+                data in a stacked bar chart, users can gain insights into trends quickly that would be difficult to see 
+                through raw datasets.
                 <br><br>
-                Muzner's guidelines and Tufte's design principles were taken into consideration when developing the stacked bar chart. The chart design
-                emphiased on accuracy, clarity and effiency in portraying the data. Munzner's guideline focused on matching visual representation to the task,
-                using appriopiate encodings, and balancing usability and complexity. While Tufte's principles of avoiding unncessary clutter, implementing
-                data-ink maximisation and making sure that every visual element provides a purpose in communicating data insight. As a result of
-                these principles, they help to create an informative and inuttive visualisaiton.
+                Muzner's guidelines and Tufte's design principles were taken into consideration when developing the 
+                stacked bar chart. The chart design emphiased on accuracy, clarity and effiency in portraying the data. 
+                Munzner's guideline focused on matching visual representation to the task, using appriopiate encodings, 
+                and balancing usability and complexity. While Tufte's principles of avoiding unncessary clutter, 
+                implementing data-ink maximisation and making sure that every visual element provides a purpose in 
+                communicating data insight. As a result of these principles, they help to create an informative and 
+                inuttive visualisaiton.
             </p>
         </section>
 
+        <br>
         <section class="card">
             <h2>Data Sources and Transformation</h2>
 
-            <p>All data were sourced from the <a href="https://www.oecd-ilibrary.org/social-issues-migration-health/data/oecd-health-statistics_health-data-en">OECD Health Statistics</a> 
-                datasets. The <a href="https://www.oecd-ilibrary.org/social-issues-migration-health/data/oecd-health-statistics/oecd-health-data-health-status_data-00540-en?parentId=http%3A%2F%2Finstance.metastore.ingenta.com%2Fcontent%2Fcollection%2Fhealth-data-en">Health status</a> 
-                dataset includes data about <a href="https://data-explorer.oecd.org/vis?fs[0]=Topic%2C1%7CHealth%23HEA%23%7CHealth%20status%23HEA_STA%23&pg=0&fc=Topic&bp=true&snb=16&df[ds]=dsDisseminateFinalDMZ&df[id]=DSD_HEALTH_STAT%40DF_COM&df[ag]=OECD.ELS.HD&df[vs]=1.0">Causes of mortality</a>
-                , which formed the foundation of our final data.
-                <br>
+            <p>All data were sourced from the <a id="a2"> OECD Health Statistics</a> datasets. The <a id="a3">Health 
+                status</a> dataset includes data about <a id="a4">Causes of mortality</a>, which formed the foundation 
+                of our final data.
+                <br><br>
                 The unfiltered dataset contains ~952,000 data points, and was transformed in a relatively simple manner 
-                to reduce the overall size and bloat. As introduced in previous Data Science units, <a href="https://www.knime.com">KNIME</a> 
-                was utilised to smoothly mould our data to a more desirable form.
+                to reduce the overall size and bloat. As introduced in previous Data Science units, <a id="a5">KNIME</a> 
+                was utilised to smoothly mould our data into a more desirable form.
             </p>
         </section>
+        <br>
+        <a id="a-top" href="#top">to top</a>
     </main>
 
     <footer>
-        This website was designed and built by <code>redacted</code> and <code>redacted</code>.
-        <br>
-        Subscribe to our Patreon for more.
+        COS30045 Data Visualisation<br>TP2, 2024
     </footer>
 </body>
 <script src="/js/index.js"></script>

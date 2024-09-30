@@ -9,8 +9,8 @@ const LINE_CHART_HEIGHT = 300 - LINE_CHART_MARGIN.top - LINE_CHART_MARGIN.bottom
 const COLOUR_BORDER_DEFAULT = "#666420";
 const COLOUR_BORDER_HIGHLIGHT = "#420666";
 const COLOUR_NO_VALUE = "#808080";
-const COLOUR_MALE = "#ffaaee";
-const COLOUR_FEMALE = "#eeffaa";
+const COLOUR_MALE = "#333888";
+const COLOUR_FEMALE = "#420420";
 const COLOUR_POPUP_FRAME = "#CCCCCCCC"; // 8-digit hex, incl. opacity
 const STROKE_WIDTH_DEFAULT = "0.5px";
 const STROKE_WIDTH_HIGHLIGHT = "0.8px";
@@ -322,11 +322,11 @@ function createYears(rangeYears) {
 // Create legend for hotkeys
 let hotkeys = [
     {key: "c", description: "Change cause"},
-    {key: "f", description: "Change colour palette"},
+    {key: "f", description: "Change fill"},
     {key: "s", description: "Change sex"},
     {key: "ArrowLeft", description: "Previous year"},
     {key: "ArrowRight", description: "Next year"},
-    {key: "hover", description: "Hover over a country to view the timeline"},
+    {key: "hover", description: "View timeline for country"},
 ];
 
 let legend = d3.select("#hotkey-legend")
