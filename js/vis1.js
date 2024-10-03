@@ -414,6 +414,13 @@ function changeYear(direction) {
     renderChoropleth();
 }
 
+
+// Source for GeoJSON
+let source = d3.select("#source")
+    .append("p")
+    .html(`GeoJSON file provided by <a href="https://github.com/holtzy/" target="_blank">holtzy</a>, found at <a href="https://github.com/holtzy/D3-graph-gallery/blob/master/DATA/world.geojson" target="_blank">this location</a>.`);
+
+
 // Read in data from specified file, call setup functions, render initial choropleth
 d3.csv("../resources/all-top-level-causes.csv").then(function(data) {
     // Convert str to num
